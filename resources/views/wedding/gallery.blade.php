@@ -31,7 +31,15 @@
     @endforelse
 </div>
 
-<div class="mt-4">
-    {{ $photos->appends(['page' => $page, 'limit' => $limit])->links() }}
+<div class="mt-4 flex items-center justify-between text-sm text-slate-600">
+    <p>Photo {{ ($page - 1) * $limit + 1 }}–{{ min($page * $limit, $total) }} of {{ $total }}</p>
+    <div class="flex gap-2">
+        @if($page > 1)
+            <a href="?page={{ $page - 1 }}&amp;limit={{ $limit }}" class="rounded-md bg-[#8b7355] px-3 py-1 text-white">← Prev</a>
+        @endif
+        @if($page < $pages)
+            <a href="?page={{ $page + 1 }}&amp;limit={{ $limit }}" class="rounded-md bg-[#8b7355] px-3 py-1 text-white">Next →</a>
+        @endif
+    </div>
 </div>
 @endsection

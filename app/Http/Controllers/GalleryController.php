@@ -27,8 +27,9 @@ class GalleryController extends Controller
             ->map(function ($p) {
                 return [
                     'id' => $p->id,
-                    'thumb_url' => './storage/app/thumbs/' . $p->thumb_filename,
-                    'photo_url' => './storage/app/print/' . $p->print_filename,
+                    'thumb_url' => '/storage/thumbs/' . $p->thumb_filename,
+                    'photo_url' => '/storage/print/' . $p->print_filename,
+                    'original_url' => '/storage/originals/' . $p->filename,
                     'caption' => $p->caption ?? '',
                     'uploader' => $p->uploader ?? 'Guest',
                     'likes' => (int) $p->likes,
