@@ -17,7 +17,8 @@ use App\Http\Controllers\Admin\SettingsController;
 Route::get('/', HomeController::class)->name('home');
 Route::get('/phonebook', PhonebookController::class)->name('phonebook');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
-Route::get('/contest', ContestController::class)->name('contest');
+Route::get('/contest', [ContestController::class, 'index'])->name('contest');
+Route::get('/contest/{id}', [ContestController::class, 'show'])->name('contest.show');
 Route::get('/upload', UploadController::class)->name('upload')->middleware('auth');
 Route::post('/upload', UploadController::class)->name('upload.store')->middleware('auth');
 
@@ -36,9 +37,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/', DashboardController::class)->name('dashboard');
     Route::get('/themes', [ThemeController::class, 'index'])->name('themes');
     Route::put('/themes', [ThemeController::class, 'update'])->name('theme.update');
-    Route::get('/phonebook', AdminPhonebookController::class)->name('phonebook');
-    Route::get('/contests', AdminContestController::class)->name('contests');
-    Route::get('/settings', SettingsController::class)->name('settings');
+    Route::get('/phonebook', [AdminPhonebookController::class, 'index'])->name('phonebook');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+
+    // Contest CRUD
+    Route::get('/contests', [ContestController::class, 'index'])->name('contests');
+    Route::post('/contests', [ContestController::class, 'store'])->name('contests.store');
+    Route::put('/contests/{id}', [ContestController::class, 'update'])->name('contests.update');
+    Route::delete('/contests/{id}', [ContestController::class, 'destroy'])->name('contests.destroy');
 });
 
 // Breeze profile routes (keep under auth)
