@@ -18,7 +18,8 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/phonebook', PhonebookController::class)->name('phonebook');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/contest', ContestController::class)->name('contest');
-Route::get('/upload', UploadController::class)->name('upload');
+Route::get('/upload', UploadController::class)->name('upload')->middleware('auth');
+Route::post('/upload', UploadController::class)->name('upload.store')->middleware('auth');
 
 // Breeze auth routes
 require __DIR__.'/auth.php';
