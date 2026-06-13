@@ -10,7 +10,20 @@
             <meta name="description" content="@yield('meta_description')">
         @endif
 
-        <!-- Fonts -->
+        <!-- Theme CSS variables -->
+        <style>
+            :root {
+                --color-primary: {{ DB::table('theme_settings')->value('primary') ?? '#8b7355' }};
+                --color-secondary: {{ DB::table('theme_settings')->value('secondary') ?? '#d4c4b0' }};
+                --color-accent: {{ DB::table('theme_settings')->value('accent') ?? '#c9a86c' }};
+                --color-background: {{ DB::table('theme_settings')->value('background') ?? '#faf8f5' }};
+                --color-text: {{ DB::table('theme_settings')->value('text') ?? '#3d3530' }};
+            }
+            body {
+                background-color: var(--color-background);
+                color: var(--color-text);
+            }
+        </style>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
