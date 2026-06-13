@@ -2,31 +2,58 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory\UserFactory */
     use HasFactory, Notifiable;
 
+    protected $table = 'users';
+    public $timestamps = true;
+
+    protected $fillable = [
+        'guest_name',
+        'first_name',
+        'last_name',
+        'email',
+        'username',
+        'password',
+        'user_type',
+        'phone',
+        'connection',
+        'core_group',
+        'specific_relationship',
+        'profile_pic',
+        'rsvp_status',
+        'connection_id',
+        'core_group_id',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Map legacy guest_name to name for Breeze compatibility.
      */
-    protected function casts(): array
+    public function getNameAttribute(): string
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->guest_name ?? $this->first_name . ' ' . $this->last_name ?? '';
+    }
+
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->user_type === 'admin';
     }
 }
