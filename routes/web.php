@@ -34,7 +34,8 @@ Route::get('/dashboard', function () {
 // Admin routes — require login
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
-    Route::get('/themes', ThemeController::class)->name('themes');
+    Route::get('/themes', [ThemeController::class, 'index'])->name('themes');
+    Route::put('/themes', [ThemeController::class, 'update'])->name('theme.update');
     Route::get('/phonebook', AdminPhonebookController::class)->name('phonebook');
     Route::get('/contests', AdminContestController::class)->name('contests');
     Route::get('/settings', SettingsController::class)->name('settings');
