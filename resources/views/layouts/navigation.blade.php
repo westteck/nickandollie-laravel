@@ -12,9 +12,25 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                        {{ __('Home') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('gallery')" :active="request()->routeIs('gallery')">
+                        {{ __('Gallery') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('upload')" :active="request()->routeIs('upload')">
+                        {{ __('Upload') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('phonebook')" :active="request()->routeIs('phonebook')">
+                        {{ __('Phonebook') }}
+                    </x-nav-link>
+                    @auth
+                        @if(auth()->user()->is_admin)
+                            <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                                {{ __('Admin') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -66,13 +82,29 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+        <!-- Responsive Navigation Menu -->
+        <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+            <div class="pt-2 pb-3 space-y-1">
+                <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                    {{ __('Home') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('gallery')" :active="request()->routeIs('gallery')">
+                    {{ __('Gallery') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('upload')" :active="request()->routeIs('upload')">
+                    {{ __('Upload') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('phonebook')" :active="request()->routeIs('phonebook')">
+                    {{ __('Phonebook') }}
+                </x-responsive-nav-link>
+                @auth
+                    @if(auth()->user()->is_admin)
+                        <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                            {{ __('Admin') }}
+                        </x-responsive-nav-link>
+                    @endif
+                @endauth
+            </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
