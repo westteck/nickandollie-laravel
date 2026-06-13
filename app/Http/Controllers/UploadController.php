@@ -21,7 +21,7 @@ class UploadController extends Controller
     {
         $request->validate([
             'photos' => 'required',
-            'photos.*' => 'image|mimes:jpeg,png,webp|max:51200',
+            'photos.*' => 'file|max:51200',
         ]);
 
         $files = $request->file('photos');
@@ -32,11 +32,29 @@ class UploadController extends Controller
         $uploaded = [];
         $failed = [];
 
+        $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+
         // Determine next photo number for batch naming
         $last = DB::table('photos')->select('photo_number')->orderBy('photo_number', 'desc')->first();
         $nextNum = $last ? ($last->photo_number + 1) : 1;
 
         foreach ($files as $file) {
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (!in_array($ext, $allowedExts)) {
+                $failed[] = $file->getClientOriginalName() . ' (bad ext)';
+                continue;
+            }
+
+            // Verify it's a real image via GD
+            $tmpPath = $file->getRealPath();
+            $testImg = $ext === 'png' ? @imagecreatefrompng($tmpPath)
+                : ($ext === 'webp' ? @imagecreatefromwebp($tmpPath)
+                : @imagecreatefromjpeg($tmpPath));
+            if ($testImg === false) {
+                $failed[] = $file->getClientOriginalName() . ' (not image)';
+                continue;
+            }
+            imagedestroy($testImg);
             $batch = str_pad((int)(($nextNum - 1) / 1000) + 1, 3, '0', STR_PAD_LEFT);
             $seq = str_pad((($nextNum - 1) % 1000) + 1, 4, '0', STR_PAD_LEFT);
             $baseName = "{$batch}-{$seq}";
