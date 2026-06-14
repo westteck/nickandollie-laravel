@@ -89,7 +89,7 @@ class UploadController extends Controller
                 'thumb_filename' => $thumbName,
                 'print_filename' => $printName,
                 'uploader_id' => auth()->id(),
-                'caption' => '',
+                'caption' => $request->input('caption', ''),
                 'photo_number' => $nextNum,
                 'likes' => 0,
                 'uploaded_at' => now(),

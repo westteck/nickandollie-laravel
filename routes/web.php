@@ -12,11 +12,15 @@ use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\PhonebookController as AdminPhonebookController;
 use App\Http\Controllers\Admin\ContestController as AdminContestController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\WeddingProfileController;
 
 // Public site routes
 Route::get('/', HomeController::class)->name('home');
 Route::get('/phonebook', PhonebookController::class)->name('phonebook');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+Route::get('/photo/{id}', [PhotoController::class, 'show'])->name('photo.show');
+Route::get('/profile/{id?}', [WeddingProfileController::class, 'show'])->name('wedding.profile');
 Route::get('/contest', [ContestController::class, 'index'])->name('contest');
 Route::get('/contest/{id}', [ContestController::class, 'show'])->name('contest.show');
 Route::get('/upload', UploadController::class)->name('upload')->middleware('auth');
@@ -37,8 +41,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/', DashboardController::class)->name('dashboard');
     Route::get('/themes', [ThemeController::class, 'index'])->name('themes');
     Route::put('/themes', [ThemeController::class, 'update'])->name('theme.update');
+    Route::post('/themes/preset', [ThemeController::class, 'switch'])->name('theme.preset');
+    Route::get('/themes/preview', [ThemeController::class, 'preview'])->name('theme.preview');
     Route::get('/phonebook', [AdminPhonebookController::class, 'index'])->name('phonebook');
+    Route::post('/phonebook', [AdminPhonebookController::class, 'store'])->name('phonebook.store');
+    Route::put('/phonebook/{id}', [AdminPhonebookController::class, 'update'])->name('phonebook.update');
+    Route::delete('/phonebook/{id}', [AdminPhonebookController::class, 'destroy'])->name('phonebook.destroy');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Contest CRUD
     Route::get('/contests', [ContestController::class, 'index'])->name('contests');

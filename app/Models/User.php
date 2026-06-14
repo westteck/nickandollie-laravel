@@ -30,6 +30,12 @@ class User extends Authenticatable
         'rsvp_status',
         'connection_id',
         'core_group_id',
+        'address',
+        'city',
+        'state',
+        'zip',
+        'phone_email',
+        'mobile',
     ];
 
     protected $hidden = [
