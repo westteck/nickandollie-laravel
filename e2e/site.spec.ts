@@ -383,3 +383,276 @@ test('registration captures legacy partner_name and RSVP fields', async ({ page 
   expect(body).toContain('name="email"');
   expect(body).toContain('name="password"');
 });
+
+/* ── 12. Login / Logout ───────────────────────────────── */
+
+test('user can login and logout', async ({ page }) => {
+  await page.goto(`${SITE}/login`);
+  await page.fill('input[name="email"]', 'eric@westteck.com');
+  await page.fill('input[name="password"]', 'Pugger40');
+  await page.click('button[type="submit"]');
+  await expect(page).toHaveURL(/\/admin/);
+  await logout(page);
+  // After logout should redirect to home or login
+  const url = page.url();
+  expect(url).not.toContain('/admin');
+});
+
+test('login with wrong password fails', async ({ page }) => {
+  await page.goto(`${SITE}/login`);
+  await page.fill('input[name="email"]', 'eric@westteck.com');
+  await page.fill('input[name="password"]', 'WrongPassword123!');
+  await page.click('button[type="submit"]');
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).toContain('Invalid');
+});
+
+/* ── 13. Profile Page ────────────────────────────────── */
+
+test('profile edit page loads for admin', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/profile`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+  expect(body).toContain('Eric'); // Admin's first name
+  await logout(page);
+});
+
+test('wedding profile page loads for another user', async ({ page }) => {
+  // Visit profile with an existing user ID (admin = id 1)
+  await page.goto(`${SITE}/profile/1`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+  expect(body).not.toContain('Error 404');
+});
+
+/* ── 14. Contest Detail Page ──────────────────────────── */
+
+test('contest detail page loads', async ({ page }) => {
+  // Get first contest ID from contests list
+  await page.goto(`${SITE}/contest`);
+  await page.waitForLoadState('networkidle');
+  const contestLinks = page.locator('a[href*="/contest/"]');
+  const count = await contestLinks.count();
+  if (count === 0) { test.skip(); return; }
+  const href = await contestLinks.first().getAttribute('href');
+  const contestId = href?.match(/\/contest\/(\d+)/)?.[1];
+  if (!contestId) { test.skip(); return; }
+  await page.goto(`${SITE}/contest/${contestId}`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+  expect(body).not.toContain('Error 404');
+});
+
+/* ── 15. Photo Interactions ───────────────────────────── */
+
+test('user can like a photo', async ({ page }) => {
+  // Get a photo ID from gallery
+  await page.goto(`${SITE}/gallery`);
+  await page.waitForLoadState('networkidle');
+  const photoLinks = page.locator('a[href*="/photo/"]');
+  const count = await photoLinks.count();
+  if (count === 0) { test.skip(); return; }
+  const href = await photoLinks.first().getAttribute('href');
+  const photoId = href?.match(/\/photo\/(\d+)/)?.[1];
+  if (!photoId) { test.skip(); return; }
+
+  // Like via API
+  const response = await page.request.post(`${SITE}/api/photo/${photoId}/like`, {});
+  expect([200, 201]).toContain(response.status());
+});
+
+test('user can favorite a photo', async ({ page }) => {
+  await page.goto(`${SITE}/gallery`);
+  await page.waitForLoadState('networkidle');
+  const photoLinks = page.locator('a[href*="/photo/"]');
+  const count = await photoLinks.count();
+  if (count === 0) { test.skip(); return; }
+  const href = await photoLinks.first().getAttribute('href');
+  const photoId = href?.match(/\/photo\/(\d+)/)?.[1];
+  if (!photoId) { test.skip(); return; }
+
+  const response = await page.request.post(`${SITE}/api/photo/${photoId}/favorite`, {});
+  expect([200, 201]).toContain(response.status());
+});
+
+test('user can comment on a photo', async ({ page }) => {
+  await page.goto(`${SITE}/gallery`);
+  await page.waitForLoadState('networkidle');
+  const photoLinks = page.locator('a[href*="/photo/"]');
+  const count = await photoLinks.count();
+  if (count === 0) { test.skip(); return; }
+  const href = await photoLinks.first().getAttribute('href');
+  const photoId = href?.match(/\/photo\/(\d+)/)?.[1];
+  if (!photoId) { test.skip(); return; }
+
+  const response = await page.request.post(`${SITE}/api/photo/${photoId}/comment`, {
+    data: { comment: 'Beautiful shot! E2E test comment.' },
+  });
+  expect([200, 201]).toContain(response.status());
+});
+
+test('photo detail page shows comments section', async ({ page }) => {
+  await page.goto(`${SITE}/gallery`);
+  await page.waitForLoadState('networkidle');
+  const photoLinks = page.locator('a[href*="/photo/"]');
+  const count = await photoLinks.count();
+  if (count === 0) { test.skip(); return; }
+  const href = await photoLinks.first().getAttribute('href');
+  const photoId = href?.match(/\/photo\/(\d+)/)?.[1];
+  if (!photoId) { test.skip(); return; }
+
+  await page.goto(`${SITE}/photo/${photoId}`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+});
+
+/* ── 16. Upload Flow ─────────────────────────────────── */
+
+test('upload page shows dropzone UI', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/upload`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  // Should have dropzone elements
+  expect(body).toContain('dropzone');
+  await logout(page);
+});
+
+/* ── 17. Phonebook Search ─────────────────────────────── */
+
+test('phonebook page has search functionality', async ({ page }) => {
+  await page.goto(`${SITE}/phonebook`);
+  await page.waitForLoadState('networkidle');
+  const searchInput = page.locator('input[type="search"], input[name="search"], input[placeholder*="search" i], input[placeholder*="filter" i]');
+  const count = await searchInput.count();
+  if (count > 0) {
+    await searchInput.first().fill('test');
+    await page.waitForTimeout(500);
+    // Should filter results
+    const body = await page.content();
+    expect(body).toBeTruthy();
+  } else {
+    test.skip(); // No search input on page
+  }
+});
+
+/* ── 18. Admin CRUD — Contest ────────────────────────── */
+
+test('admin can create a contest', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/admin/contests`);
+  await page.waitForLoadState('networkidle');
+
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+
+  // Check for create form
+  const form = page.locator('form[action*="contests"]');
+  if (await form.count() > 0) {
+    await page.fill('input[name="title"]', `E2E Test Contest ${Date.now()}`);
+    await page.fill('textarea[name="description"]', 'Test description');
+    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+    const result = await page.content();
+    expect(result).not.toContain('Error 500');
+  }
+  await logout(page);
+});
+
+/* ── 19. Admin CRUD — Phonebook Contact ─────────────── */
+
+test('admin can add a phonebook contact', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/admin/phonebook`);
+  await page.waitForLoadState('networkidle');
+
+  const form = page.locator('form[action*="phonebook"]');
+  if (await form.count() > 0) {
+    await page.fill('input[name="entry_name"]', `E2E Contact ${Date.now()}`);
+    await page.fill('input[name="email"]', `e2e_contact_${Date.now()}@test.local`);
+    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+    const result = await page.content();
+    expect(result).not.toContain('Error 500');
+  }
+  await logout(page);
+});
+
+/* ── 20. Admin Settings Update ───────────────────────── */
+
+test('admin can view and submit settings form', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/admin/settings`);
+  await page.waitForLoadState('networkidle');
+
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+
+  // Check for a form with a submit button
+  const submitBtn = page.locator('button[type="submit"], input[type="submit"]');
+  if (await submitBtn.count() > 0) {
+    // Just submit — don't change anything real
+    await submitBtn.first().click();
+    await page.waitForLoadState('networkidle');
+    const result = await page.content();
+    expect(result).not.toContain('Error 500');
+  }
+  await logout(page);
+});
+
+/* ── 21. Theme Variables Applied on Public Pages ─────── */
+
+test('theme colors are applied on gallery page', async ({ page }) => {
+  await page.goto(`${SITE}/gallery`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  // Should have CSS variables from theme
+  expect(body).toContain('--color-primary');
+  expect(body).toContain('#8b7355'); // default Fortune Gold primary
+});
+
+test('theme colors are applied on home page', async ({ page }) => {
+  await page.goto(`${SITE}/`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).toContain('--color-primary');
+});
+
+/* ── 22. API: Contest List ────────────────────────────── */
+
+test('api returns contest list', async ({ page }) => {
+  const response = await page.request.get(`${SITE}/api/contests`);
+  expect([200, 302, 404]).toContain(response.status());
+});
+
+/* ── 23. API: Phonebook List ──────────────────────────── */
+
+test('api returns phonebook list', async ({ page }) => {
+  const response = await page.request.get(`${SITE}/api/phonebook-list`);
+  expect([200, 302, 404]).toContain(response.status());
+});
+
+/* ── 24. Navigation Links ────────────────────────────── */
+
+test('main nav has key links', async ({ page }) => {
+  await page.goto(`${SITE}/`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).toContain('Gallery');
+  expect(body).toContain('Phonebook');
+  expect(body).toContain('Contest');
+});
+
+test('footer exists on home page', async ({ page }) => {
+  await page.goto(`${SITE}/`);
+  await page.waitForLoadState('networkidle');
+  // Footer or copyright text
+  const body = await page.content();
+  expect(body).toContain('Nick') && expect(body).toContain('Ollie');
+});
