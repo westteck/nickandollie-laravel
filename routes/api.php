@@ -245,7 +245,7 @@ Route::prefix('photo/{id}')->group(function () {
     })->name('api.photo.enter-contest');
 })->name('api.photo');
 
-// Contest vote toggle
+// Contest vote toggle — uses contest_votes table (not photo votes)
 Route::post('/contest-vote', function (\Illuminate\Http\Request $request) {
     if (!auth()->check()) {
         return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
@@ -268,18 +268,18 @@ Route::post('/contest-vote', function (\Illuminate\Http\Request $request) {
         return response()->json(['success' => false, 'error' => 'Contest is closed'], 400);
     }
 
-    $existing = DB::table('votes')
-        ->where('photo_id', $entry->photo_id)
+    $existing = DB::table('contest_votes')
+        ->where('contest_entry_id', $entryId)
         ->where('user_id', $userId)
         ->first();
 
     if ($existing) {
-        DB::table('votes')->where('id', $existing->id)->delete();
+        DB::table('contest_votes')->where('id', $existing->id)->delete();
         DB::table('contest_entries')->where('id', $entryId)->decrement('votes');
         $voted = false;
     } else {
-        DB::table('votes')->insert([
-            'photo_id' => $entry->photo_id,
+        DB::table('contest_votes')->insert([
+            'contest_entry_id' => $entryId,
             'user_id' => $userId,
             'created_at' => now(),
         ]);

@@ -1,77 +1,75 @@
 @extends('layouts.app')
 @section('title', 'Phonebook')
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex flex-col gap-2">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Wedding Directory</p>
-        <h1 class="text-3xl font-bold sm:text-4xl">Phonebook</h1>
-        <p class="max-w-2xl text-body">Find contact details for family, sponsors, and friends.</p>
+<div class="container py-4">
+    <div class="section-header">
+        <h2>Phonebook</h2>
+        <p class="text-muted">Find contact details for family, sponsors, and friends.</p>
     </div>
 
     <!-- Search & Filter -->
-    <form method="GET" action="{{ route('phonebook') }}" class="flex flex-wrap gap-3">
-        <input type="text" name="search" value="{{ $search }}" placeholder="Search by name..." class="rounded-lg border border-sec/30 px-4 py-2 text-sm">
-        <select name="group" class="rounded-lg border border-sec/30 px-4 py-2 text-sm">
-            <option value="">All Groups</option>
-            @foreach($groups as $g)
-                <option value="{{ $g }}" {{ $group == $g ? 'selected' : '' }}>{{ $g }}</option>
-            @endforeach
-        </select>
-        <button type="submit" class="rounded-md bg-primary px-4 py-2 text-sm text-white">Filter</button>
-        @if($search || $group)
-            <a href="{{ route('phonebook') }}" class="rounded-md border border-sec/30 px-4 py-2 text-sm text-body/80">Clear</a>
-        @endif
+    <form method="GET" action="{{ route('phonebook') }}" class="row g-2 mb-4">
+        <div class="col-md-5">
+            <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="Search by name...">
+        </div>
+        <div class="col-md-4">
+            <select name="group" class="form-select">
+                <option value="">All Groups</option>
+                @foreach($groups as $g)
+                    <option value="{{ $g }}" {{ $group == $g ? 'selected' : '' }}>{{ $g }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            @if($search || $group)
+                <a href="{{ route('phonebook') }}" class="btn btn-outline-secondary">Clear</a>
+            @endif
+        </div>
     </form>
 
     <!-- Entries Grid -->
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="row g-3">
         @forelse($entries as $e)
-            <div class="rounded-2xl glass-panel p-5 ">
-                <h3 class="text-lg font-semibold text-sec">{{ $e->entry_name }}</h3>
-                @if($e->first_name)
-                    <p class="text-sm text-body/70">{{ $e->first_name }}</p>
-                @endif
-                @if($e->family_connection)
-                    <p class="mt-1 text-xs font-medium uppercase tracking-wider text-body/60">{{ $e->family_connection }}</p>
-                @endif
-                @if($e->connection || $e->core_group)
-                    <p class="mt-1 text-xs text-body/60">{{ $e->connection }} · {{ $e->core_group }}</p>
-                @endif
-                <div class="mt-3 space-y-1 text-sm">
-                    @if($e->phone)
-                        <p class="flex items-center gap-2">
-                            <svg class="h-4 w-4 text-body/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            {{ $e->phone }}
-                        </p>
+        <div class="col-md-6 col-lg-4">
+            <div class="card phonebook-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title" style="color: var(--primary)">{{ $e->entry_name }}</h5>
+                    @if($e->first_name)
+                        <p class="text-muted small mb-1">{{ $e->first_name }}</p>
                     @endif
-                    @if($e->mobile)
-                        <p class="flex items-center gap-2">
-                            <svg class="h-4 w-4 text-body/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                            {{ $e->mobile }}
-                        </p>
+                    @if($e->family_connection)
+                        <p class="small text-uppercase text-muted">{{ $e->family_connection }}</p>
                     @endif
-                    @if($e->email)
-                        <p class="flex items-center gap-2">
-                            <svg class="h-4 w-4 text-body/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            <a href="mailto:{{ $e->email }}" class="text-sec hover:underline">{{ $e->email }}</a>
-                        </p>
+                    @if($e->connection || $e->core_group)
+                        <p class="small text-muted">{{ $e->connection }} &middot; {{ $e->core_group }}</p>
                     @endif
-                    @if($e->address)
-                        <p class="flex items-start gap-2">
-                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-body/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-                            <span>{{ $e->address }}{{ $e->city ? ', ' . $e->city : '' }}{{ $e->state ? ', ' . $e->state : '' }} {{ $e->zip }}</span>
-                        </p>
+                    <hr>
+                    <div class="small">
+                        @if($e->phone)
+                            <p class="mb-1"><i class="fas fa-phone me-2 text-muted"></i>{{ $e->phone }}</p>
+                        @endif
+                        @if($e->mobile)
+                            <p class="mb-1"><i class="fas fa-mobile-alt me-2 text-muted"></i>{{ $e->mobile }}</p>
+                        @endif
+                        @if($e->email)
+                            <p class="mb-1"><i class="fas fa-envelope me-2 text-muted"></i><a href="mailto:{{ $e->email }}">{{ $e->email }}</a></p>
+                        @endif
+                        @if($e->address)
+                            <p class="mb-1"><i class="fas fa-map-marker-alt me-2 text-muted"></i>{{ $e->address }}{{ $e->city ? ', ' . $e->city : '' }}{{ $e->state ? ', ' . $e->state : '' }} {{ $e->zip }}</p>
+                        @endif
+                    </div>
+                    @if($e->notes)
+                        <p class="mt-2 text-muted small">{{ $e->notes }}</p>
                     @endif
                 </div>
-                @if($e->notes)
-                    <p class="mt-3 text-xs text-body/60">{{ $e->notes }}</p>
-                @endif
             </div>
+        </div>
         @empty
-            <div class="col-span-full text-center py-10">
-                <p class="text-body/70">No entries found.</p>
-            </div>
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No entries found.</p>
+        </div>
         @endforelse
     </div>
-</section>
+</div>
 @endsection

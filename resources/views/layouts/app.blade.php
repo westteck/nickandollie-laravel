@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,75 +10,65 @@
             <meta name="description" content="@yield('meta_description')">
         @endif
 
-        <!-- Theme CSS variables -->
+        <!-- Favicon -->
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💒</text></svg>">
+
+        <!-- Theme CSS variables from DB -->
         <style>
             :root {
-                --color-primary: #171d33;
-                --color-accent: #c2b8b7;
-                --color-body: #FAEBD7;
-                --color-sec: #36538f;
+                --primary: #8b7355;
+                --primary-dark: #6b5744;
+                --secondary: #d4c4b0;
+                --accent: #c9a86c;
+                --bg: #faf8f5;
+                --text: #3d3530;
+                --text-light: #7a726a;
+                --white: #ffffff;
+                --error: #c45c5c;
+                --success: #5c9c6b;
+                --gold: #e8b923;
             }
         </style>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-        <!-- Bootstrap 5 JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Dark mode init (prevent flash) -->
-        <script>
-            if (localStorage.getItem('theme') === 'light' ||
-                (!localStorage.getItem('theme') && !document.documentElement.classList.contains('dark'))) {
-                document.documentElement.classList.remove('dark');
-            }
-        </script>
+        <!-- Legacy CSS (full design system) -->
+        <link rel="stylesheet" href="/css/style.css">
 
         <!-- Page-specific scripts -->
         @yield('scripts')
     </head>
-    <body class="flex flex-col min-h-screen">
+    <body>
 
-        <!-- Floating background blobs -->
-        <div class="floating-blob" data-position="top-left"></div>
-        <div class="floating-blob" data-position="bottom-right"></div>
+        @include('layouts.navigation')
 
-        <!-- Content wrapper -->
-        <div class="content-wrapper">
-            @include('layouts.navigation')
+        <!-- Page Heading -->
+        @isset($header)
+            <header class="container py-4">
+                <h1 class="section-header">{{ $header }}</h1>
+            </header>
+        @endisset
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="glass-panel mx-auto mt-6 max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-                    <div class="font-display text-2xl font-semibold text-night">{{ $header }}</div>
-                </header>
+        <!-- Page Content -->
+        <main>
+            @isset($slot)
+                {{ $slot }}
+            @else
+                @yield('content')
             @endisset
+        </main>
 
-            <!-- Page Content -->
-            <main>
-                @isset($slot)
-                    {{ $slot }}
-                @else
-                    @yield('content')
-                @endisset
-            </main>
+        <!-- Footer -->
+        <footer class="mt-auto">
+            <div class="container py-4">
+                <p class="text-center text-muted small mb-0">
+                    &copy; {{ date('Y') }} Nick &amp; Ollie Fortune. All rights reserved.
+                </p>
+            </div>
+        </footer>
 
-            <!-- Footer -->
-            <footer class="mt-auto">
-                <div class="mx-auto max-w-6xl px-6 py-6">
-                    <div class="glass-panel flex flex-col items-center gap-4 p-4 md:flex-row md:justify-between">
-                        @auth
-                        <a href="{{ route('gallery') }}" class="nav-brand footer-nav-brand" aria-label="Nick &amp; Ollie home">
-                            <div class="logo-text font-display"><span class="logo-title">Nick &amp; Ollie</span></div>
-                        </a>
-                        @endauth
-                        <p class="text-xs text-body/70">
-                            &copy; {{ date('Y') }} Nick &amp; Ollie Fortune. All rights reserved.
-                        </p>
-                    </div>
-                </div>
-            </footer>
-        </div>
-
+        <!-- Bootstrap 5 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

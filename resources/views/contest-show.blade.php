@@ -43,7 +43,8 @@
             @foreach($entries as $i => $entry)
             <div class="col contest-entry"
                  data-index="{{ $i }}"
-                 data-id="{{ $entry->photo_id }}"
+                 data-entry-id="{{ $entry->id }}"
+                 data-photo-id="{{ $entry->photo_id }}"
                  data-voted="0"
                  data-votes="{{ $entry->votes ?? 0 }}"
                  role="button" tabindex="0">
@@ -57,7 +58,7 @@
                     <br><small class="text-white">{{ $entry->caption ?? 'Entry' }}</small>
                     @if($contest->status !== 'closed')
                         <br>
-                        <button class="btn btn-sm btn-outline-light vote-btn mt-1" data-id="{{ $entry->photo_id }}" onclick="event.stopPropagation();">
+                        <button class="btn btn-sm btn-outline-light vote-btn mt-1" data-entry-id="{{ $entry->id }}" onclick="event.stopPropagation();">
                             <i class="far fa-thumbs-up"></i>
                         </button>
                     @endif
@@ -169,7 +170,8 @@
     // Build entries array from DOM
     document.querySelectorAll('.contest-entry').forEach(function(el) {
         entries.push({
-            id: el.dataset.id,
+            entry_id: parseInt(el.dataset.entryId),
+            photo_id: parseInt(el.dataset.photoId),
             photo_url: el.querySelector('img').src.replace('/thumbs/', '/print/'),
             thumb_url: el.querySelector('img').src,
             caption: el.querySelector('small')?.textContent || '',
@@ -230,12 +232,13 @@
         fetch('/api/contest-vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-            body: JSON.stringify({ entry_id: e.id })
+            body: JSON.stringify({ entry_id: e.entry_id })
         })
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (data.success) {
                 e.votes = data.votes;
+                e.voted = data.voted;
                 document.getElementById('vote-count').textContent = data.votes;
             }
         })
@@ -246,8 +249,8 @@
     document.querySelectorAll('.vote-btn').forEach(function(btn) {
         btn.addEventListener('click', function(ev) {
             ev.stopPropagation();
-            var entryId = parseInt(this.dataset.id);
-            var entry = entries.find(function(e) { return e.id == entryId; });
+            var entryId = parseInt(this.dataset.entryId);
+            var entry = entries.find(function(e) { return e.entry_id == entryId; });
             if (!entry) return;
             entry.voted = !entry.voted;
             entry.votes += entry.voted ? 1 : -1;
@@ -260,7 +263,10 @@
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.success) entry.votes = data.votes;
+                if (data.success) {
+                    entry.votes = data.votes;
+                    entry.voted = data.voted;
+                }
             })
             .catch(function() {});
         });

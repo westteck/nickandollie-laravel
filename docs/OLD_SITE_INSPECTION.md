@@ -8,7 +8,7 @@
 
 | File | Features | Port Status |
 |------|----------|-------------|
-| `index.php` | Hero landing, theme switcher (?theme=), API routing (/api/login.php, /api/register.php), CSP headers, session config | ❌ Blade `welcome.blade.php` exists but hero is static — needs DB hero content |
+|| `index.php` | Hero landing, theme switcher (?theme=), API routing (/api/login.php, /api/register.php), CSP headers, session config | ✅ Blade `home.blade.php` — hero from DB with default tagline, flower strip, login/register tabs |
 | `gallery.php` | Photo grid JS-driven, "Upload" button for logged-in users | ✅ Wired (kanban done) |
 | `photo.php` | Lightbox, favorite toggle, star rating (1-5), contest entry select, comments, likes count, back nav | ❌ Not yet in Laravel |
 | `contests.php` | Contest cards with top-3 thumbnails, status badges (active/closed/draft) | ❌ Blade `contest.blade.php` exists — wired? |

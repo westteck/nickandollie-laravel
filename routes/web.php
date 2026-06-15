@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\PhonebookController as AdminPhonebookController;
 use App\Http\Controllers\Admin\ContestController as AdminContestController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\PhotoManagementController;
+use App\Http\Controllers\Admin\CommentModerationController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\WeddingProfileController;
 
@@ -56,6 +59,25 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/contests', [ContestController::class, 'store'])->name('contests.store');
     Route::put('/contests/{id}', [ContestController::class, 'update'])->name('contests.update');
     Route::delete('/contests/{id}', [ContestController::class, 'destroy'])->name('contests.destroy');
+
+    // Admin User Management
+    Route::get('/users', [UserManagementController::class, 'index'])->name('admin.users');
+    Route::get('/users/list', [UserManagementController::class, 'list'])->name('admin.users.list');
+    Route::post('/users', [UserManagementController::class, 'store'])->name('admin.users.store');
+    Route::put('/users/{id}', [UserManagementController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
+
+    // Admin Photo Management
+    Route::get('/photos', [PhotoManagementController::class, 'index'])->name('admin.photos');
+    Route::get('/photos/list', [PhotoManagementController::class, 'list'])->name('admin.photos.list');
+    Route::put('/photos/{id}', [PhotoManagementController::class, 'update'])->name('admin.photos.update');
+    Route::delete('/photos/{id}', [PhotoManagementController::class, 'destroy'])->name('admin.photos.destroy');
+
+    // Admin Comment Moderation
+    Route::get('/comments', [CommentModerationController::class, 'index'])->name('admin.comments');
+    Route::get('/comments/list', [CommentModerationController::class, 'list'])->name('admin.comments.list');
+    Route::delete('/comments/{id}', [CommentModerationController::class, 'destroy'])->name('admin.comments.destroy');
+    Route::post('/comments/bulk-delete', [CommentModerationController::class, 'bulkDestroy'])->name('admin.comments.bulk-destroy');
 });
 
 // Breeze profile routes (keep under auth)

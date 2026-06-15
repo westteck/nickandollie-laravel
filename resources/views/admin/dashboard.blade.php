@@ -130,7 +130,22 @@
     </div>
 
     {{-- Quick Links --}}
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <a href="{{ route('admin.users') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
+            <i class="fas fa-users text-2xl text-sec mb-2"></i>
+            <h3 class="font-semibold text-slate-800">Users</h3>
+            <p class="text-xs text-body/60 mt-1">Manage guest accounts</p>
+        </a>
+        <a href="{{ route('admin.photos') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
+            <i class="fas fa-images text-2xl text-sec mb-2"></i>
+            <h3 class="font-semibold text-slate-800">Photos</h3>
+            <p class="text-xs text-body/60 mt-1">Manage uploaded photos</p>
+        </a>
+        <a href="{{ route('admin.comments') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
+            <i class="fas fa-comments text-2xl text-sec mb-2"></i>
+            <h3 class="font-semibold text-slate-800">Comments</h3>
+            <p class="text-xs text-body/60 mt-1">Moderate guest comments</p>
+        </a>
         <a href="{{ route('admin.themes') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
             <i class="fas fa-palette text-2xl text-sec mb-2"></i>
             <h3 class="font-semibold text-slate-800">Themes</h3>
@@ -141,6 +156,8 @@
             <h3 class="font-semibold text-slate-800">Contests</h3>
             <p class="text-xs text-body/60 mt-1">Manage photo contests</p>
         </a>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <a href="{{ route('admin.phonebook') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
             <i class="fas fa-address-book text-2xl text-sec mb-2"></i>
             <h3 class="font-semibold text-slate-800">Phonebook</h3>

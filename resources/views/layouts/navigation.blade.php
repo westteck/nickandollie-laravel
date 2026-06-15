@@ -1,94 +1,79 @@
-<header class="site-header">
-    <nav class="nav-shell relative mx-auto flex w-full items-center justify-between" x-data="{ mobileOpen: false }">
+<header class="site-nav">
+    <nav class="nav-container" x-data="{ mobileOpen: false }">
 
-        <!-- Logo / Brand (always visible) -->
-        <a href="{{ Auth::check() ? route('gallery') : route('home') }}"
-           class="nav-brand" aria-label="Nick & Ollie home">
-            <div class="logo-text font-display">
-                <span class="logo-title">{{ Auth::check() ? 'Nick &amp; Ollie' : 'Welcome' }}</span>
-            </div>
+        <!-- Logo / Brand -->
+        <a href="{{ Auth::check() ? route('gallery') : route('home') }}" class="nav-brand" aria-label="Nick & Ollie home">
+            <span class="nav-brand-text">{{ Auth::check() ? 'Nick & Ollie' : 'Welcome' }}</span>
         </a>
 
         <!-- Desktop links (only when logged in) -->
         @auth
         <div class="nav-links">
-            <a class="nav-link" href="{{ route('gallery') }}" aria-current="{{ request()->routeIs('gallery') ? 'page' : 'false' }}">Gallery</a>
-            <a class="nav-link" href="{{ route('upload') }}" aria-current="{{ request()->routeIs('upload') ? 'page' : 'false' }}">Upload</a>
-            <a class="nav-link" href="{{ route('phonebook') }}" aria-current="{{ request()->routeIs('phonebook') ? 'page' : 'false' }}">Phonebook</a>
+            <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">Gallery</a>
+            <a class="nav-link {{ request()->routeIs('upload') ? 'active' : '' }}" href="{{ route('upload') }}">Upload</a>
+            <a class="nav-link {{ request()->routeIs('contest') ? 'active' : '' }}" href="{{ route('contest') }}">Contests</a>
+            <a class="nav-link {{ request()->routeIs('phonebook') ? 'active' : '' }}" href="{{ route('phonebook') }}">Phonebook</a>
             @if(auth()->user()->is_admin)
-                <a class="nav-link" href="{{ route('admin.dashboard') }}" aria-current="{{ request()->routeIs('admin.*') ? 'page' : 'false' }}">Admin</a>
+                <a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Admin</a>
             @endif
         </div>
         @endauth
 
         <!-- Right side -->
-        <div class="flex items-center gap-3">
-
-            <!-- Theme toggle (always) -->
-            <button type="button" class="nav-theme-toggle"
-                    x-on:click="$dispatch('toggle-theme')"
-                    aria-label="Toggle theme">
-                <svg x-show="$root.classList.contains('dark')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                </svg>
-                <svg x-show="!$root.classList.contains('dark')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-            </button>
-
+        <div class="nav-actions">
             @auth
                 <!-- User dropdown -->
-                <div class="hidden lg:flex items-center gap-3" x-data="{ open: false }">
-                    <button @click="open = ! open" class="nav-link flex items-center gap-1">
-                        {{ Auth::user()->name }}
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                <div class="nav-user" x-data="{ open: false }">
+                    <button @click="open = !open" class="nav-user-toggle">
+                        {{ Auth::user()->guest_name ?? Auth::user()->name }}
+                        <i class="fas fa-chevron-down ms-1"></i>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-52 w-44 rounded-xl glass-panel p-2 z-50 top-12">
-                        <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2 text-xs uppercase tracking-widest hover:bg-white/20">Profile</a>
+                    <div x-show="open" @click.away="open = false" class="nav-dropdown">
+                        <a href="{{ route('profile.edit') }}">Profile</a>
+                        <a href="{{ route('wedding.profile', auth()->id()) }}">My Public Profile</a>
+                        @if(auth()->user()->is_admin)
+                            <hr>
+                            <a href="{{ route('admin.users') }}"><i class="fas fa-users me-2"></i>Users</a>
+                            <a href="{{ route('admin.photos') }}"><i class="fas fa-images me-2"></i>Photos</a>
+                            <a href="{{ route('admin.comments') }}"><i class="fas fa-comments me-2"></i>Comments</a>
+                            <a href="{{ route('admin.contests') }}"><i class="fas fa-trophy me-2"></i>Contests</a>
+                            <a href="{{ route('admin.themes') }}"><i class="fas fa-palette me-2"></i>Themes</a>
+                            <a href="{{ route('admin.phonebook') }}"><i class="fas fa-address-book me-2"></i>Phonebook</a>
+                            <a href="{{ route('admin.settings') }}"><i class="fas fa-cog me-2"></i>Settings</a>
+                        @endif
+                        <hr>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-xs uppercase tracking-widest hover:bg-white/20">Log Out</button>
+                            <button type="submit" class="nav-dropdown-link">Log Out</button>
                         </form>
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="nav-cta hidden lg:inline-flex">Login</a>
+                <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Login</a>
             @endauth
 
-            <!-- Mobile menu toggle (only when logged in) -->
+            <!-- Mobile menu toggle -->
             @auth
-            <button type="button" class="mobile-menu-toggle lg:hidden"
-                    x-on:click="mobileOpen = ! mobileOpen"
-                    :aria-expanded="mobileOpen"
-                    aria-controls="mobile-navigation"
-                    aria-label="Open menu">
-                <svg x-show="!mobileOpen" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-                </svg>
-                <svg x-show="mobileOpen" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+            <button type="button" class="nav-mobile-toggle" x-on:click="mobileOpen = !mobileOpen" aria-label="Toggle menu">
+                <i class="fas" :class="mobileOpen ? 'fa-times' : 'fa-bars'"></i>
             </button>
             @endauth
         </div>
 
-        <!-- Mobile dropdown (only when logged in) -->
+        <!-- Mobile dropdown -->
         @auth
-        <div class="mobile-nav lg:hidden"
-             :class="{ 'hidden': !mobileOpen }"
-             id="mobile-navigation"
-             x-show="mobileOpen"
-             x-transition>
-            <a href="{{ route('gallery') }}" aria-current="{{ request()->routeIs('gallery') ? 'page' : 'false' }}">Gallery</a>
-            <a href="{{ route('upload') }}" aria-current="{{ request()->routeIs('upload') ? 'page' : 'false' }}">Upload</a>
-            <a href="{{ route('phonebook') }}" aria-current="{{ request()->routeIs('phonebook') ? 'page' : 'false' }}">Phonebook</a>
-            @if(auth()->user()->is_admin)
-                <a href="{{ route('admin.dashboard') }}" aria-current="{{ request()->routeIs('admin.*') ? 'page' : 'false' }}">Admin</a>
-            @endif
+        <div class="nav-mobile" x-show="mobileOpen" x-transition>
+            <a href="{{ route('gallery') }}">Gallery</a>
+            <a href="{{ route('upload') }}">Upload</a>
+            <a href="{{ route('contest') }}">Contests</a>
+            <a href="{{ route('phonebook') }}">Phonebook</a>
             <a href="{{ route('profile.edit') }}">Profile</a>
+            @if(auth()->user()->is_admin)
+                <a href="{{ route('admin.dashboard') }}">Admin</a>
+            @endif
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="w-full text-left uppercase tracking-widest">Log Out</button>
+                <button type="submit" class="nav-mobile-link">Log Out</button>
             </form>
         </div>
         @endauth
@@ -96,30 +81,152 @@
     </nav>
 </header>
 
-<!-- Theme toggle event listener -->
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.store('theme', {
-            isDark: document.documentElement.classList.contains('dark'),
-            toggle() {
-                this.isDark = !this.isDark;
-                if (this.isDark) {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                }
-            }
-        });
-    });
-
-    window.addEventListener('toggle-theme', () => {
-        if (window.Alpine && Alpine.store('theme')) {
-            Alpine.store('theme').toggle();
-        } else {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        }
-    });
-</script>
+<style>
+.site-nav {
+    background: var(--white);
+    border-bottom: 2px solid var(--secondary);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+}
+.nav-brand {
+    text-decoration: none;
+    color: var(--primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+.nav-brand-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.nav-link {
+    text-decoration: none;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+.nav-link:hover, .nav-link.active {
+    color: var(--primary);
+    background: rgba(139, 115, 85, 0.08);
+}
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.nav-user {
+    position: relative;
+}
+.nav-user-toggle {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+}
+.nav-user-toggle:hover {
+    background: rgba(139, 115, 85, 0.08);
+}
+.nav-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    background: var(--white);
+    border: 1px solid var(--secondary);
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    min-width: 200px;
+    padding: 0.5rem;
+    z-index: 200;
+}
+.nav-dropdown a, .nav-dropdown-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+.nav-dropdown a:hover, .nav-dropdown-link:hover {
+    background: rgba(139, 115, 85, 0.08);
+    color: var(--primary);
+}
+.nav-dropdown hr {
+    border: none;
+    border-top: 1px solid var(--secondary);
+    margin: 0.25rem 0;
+}
+.nav-mobile-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+.nav-mobile {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-bottom: 2px solid var(--secondary);
+    padding: 0.5rem 1rem;
+    z-index: 99;
+}
+.nav-mobile a, .nav-mobile-link {
+    display: block;
+    padding: 0.75rem 0;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+.nav-mobile a:hover, .nav-mobile-link:hover {
+    color: var(--primary);
+}
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-actions .nav-user { display: none; }
+    .nav-mobile-toggle { display: block; }
+    .nav-mobile { display: block; }
+}
+</style>

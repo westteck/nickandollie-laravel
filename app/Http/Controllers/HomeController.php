@@ -24,7 +24,7 @@ class HomeController extends Controller
 
         // Default if null
         if (!$hero_content) {
-            $hero_content = '<h1>Nick &amp; Ollie Fortune</h1><p class="hero__date">November 13, 2026</p>';
+            $hero_content = '<h1>Nick &amp; Ollie Fortune</h1><p class="hero__date">November 13, 2026</p><p class="hero__tagline">Tulay sa aming pagdiriwang — ikuwento ang iyong kwento, ikuwento ang saya!</p>';
         }
 
         return view('home', [
