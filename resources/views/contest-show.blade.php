@@ -3,31 +3,17 @@
 @section('title', $contest->title ?? 'Contest')
 
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex items-center gap-3 mb-2">
-        <a href="{{ route('contest') }}" class="text-sm text-slate-500 hover:text-[#8b7355]">
-            <i class="fas fa-arrow-left me-1"></i>All Contests
-        </a>
-    </div>
+<div class="container-fluid px-2 py-3">
+    <a href="{{ route('contest') }}" class="btn btn-light btn-sm mb-3">
+        <i class="fas fa-arrow-left me-1"></i> All Contests
+    </a>
 
-    <div class="flex flex-col gap-2">
-        <div class="flex items-center gap-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--primary)">
-                <i class="fas {{ $contest->icon ?? 'fa-trophy' }} text-white"></i>
-            </div>
-            <div>
-                <h1 class="text-2xl font-bold sm:text-3xl">{{ $contest->title }}</h1>
-                @if($contest->status === 'active')
-                    <span class="badge bg-success text-xs">Active</span>
-                @elseif($contest->status === 'closed')
-                    <span class="badge bg-warning text-xs">Closed</span>
-                @endif
-            </div>
-        </div>
+    <div class="bg-white py-3 text-center border-bottom mb-3">
+        <h1 class="h4 mb-2" style="color: var(--primary)">{{ $contest->title }}</h1>
         @if($contest->description)
-            <p class="text-slate-600 max-w-2xl">{{ $contest->description }}</p>
+            <p class="text-muted mb-1 px-3">{{ $contest->description }}</p>
         @endif
-        <div class="flex items-center gap-4 text-sm text-slate-500">
+        <div class="d-flex justify-content-center gap-3 text-sm text-body/70">
             <span><i class="fas fa-images me-1"></i>{{ $entries->count() }} entries</span>
             @if($contest->prize)
                 <span><i class="fas fa-gift me-1"></i>Prize: {{ $contest->prize }}</span>
@@ -36,33 +22,45 @@
                 <span><i class="fas fa-calendar me-1"></i>{{ \Carbon\Carbon::parse($contest->start_date)->format('M j, Y') }}</span>
             @endif
         </div>
+        @if($contest->status === 'active')
+            <span class="badge bg-success mt-2">Active</span>
+        @elseif($contest->status === 'closed')
+            <span class="badge bg-warning text-dark mt-2"><i class="fas fa-lock me-1"></i>Closed</span>
+        @endif
     </div>
 
     @if($entries->isEmpty())
-        <div class="text-center py-12 bg-white rounded-3xl shadow-sm ring-1 ring-black/5">
-            <i class="fas fa-images text-4xl text-gray-300 mb-4"></i>
-            <h2 class="text-lg font-medium text-gray-500">No entries yet</h2>
-            <p class="text-gray-400 mb-4">Be the first to enter!</p>
-            <a href="{{ route('gallery') }}" class="inline-flex items-center rounded-lg px-4 py-2 text-white text-sm font-medium" style="background: var(--primary)">
+        <div class="text-center py-5">
+            <i class="fas fa-images text-4xl text-body/40 mb-4"></i>
+            <h2 class="h5 text-muted">No entries yet</h2>
+            <p class="text-muted mb-4">Be the first to enter!</p>
+            <a href="{{ route('gallery') }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus me-1"></i>Enter Contest
             </a>
         </div>
     @else
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            @foreach($entries as $entry)
-            <div class="group relative rounded-2xl overflow-hidden bg-white shadow-sm ring-1 ring-black/5">
-                <a href="/storage/originals/{{ $entry->filename }}" class="block aspect-square">
-                    <img src="/storage/thumbs/{{ $entry->filename }}" alt="{{ $entry->caption ?? 'Entry' }}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onerror="this.src='/storage/originals/{{ $entry->filename }}'">
-                </a>
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                    <div class="flex items-center justify-between text-white text-xs">
-                        <span class="truncate">{{ $entry->caption ?? 'Entry' }}</span>
-                        <span class="flex items-center gap-1">
-                            <i class="far fa-thumbs-up"></i>{{ $entry->votes ?? 0 }}
-                        </span>
-                    </div>
+        <div class="row row-cols-3 row-cols-md-4 row-cols-lg-5 g-2" id="entries-grid">
+            @foreach($entries as $i => $entry)
+            <div class="col contest-entry"
+                 data-index="{{ $i }}"
+                 data-id="{{ $entry->photo_id }}"
+                 data-voted="0"
+                 data-votes="{{ $entry->votes ?? 0 }}"
+                 role="button" tabindex="0">
+                <img src="/storage/thumbs/{{ $entry->filename }}"
+                     alt="{{ $entry->caption ?? 'Entry' }}"
+                     class="img-fluid rounded"
+                     loading="lazy"
+                     onerror="this.src='/storage/originals/{{ $entry->filename }}'">
+                <div class="overlay">
+                    <i class="fas fa-thumbs-up text-white mb-1"></i> {{ $entry->votes ?? 0 }}
+                    <br><small class="text-white">{{ $entry->caption ?? 'Entry' }}</small>
+                    @if($contest->status !== 'closed')
+                        <br>
+                        <button class="btn btn-sm btn-outline-light vote-btn mt-1" data-id="{{ $entry->photo_id }}" onclick="event.stopPropagation();">
+                            <i class="far fa-thumbs-up"></i>
+                        </button>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -70,12 +68,212 @@
     @endif
 
     @if($contest->rules)
-        <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-black/5">
+        <div class="bg-white rounded-3xl p-6 mt-4">
             <h2 class="text-lg font-semibold mb-3" style="color: var(--primary)">Contest Rules</h2>
-            <div class="prose prose-sm text-slate-600 max-w-none">
+            <div class="prose prose-sm text-body/80 max-w-none">
                 {!! nl2br(e($contest->rules)) !!}
             </div>
         </div>
     @endif
-</section>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <button class="btn-close btn-close-white position-absolute top-0 end-0 m-3" id="lightbox-close"></button>
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
+    <button class="lightbox-nav lightbox-next" id="lightbox-next"><i class="fas fa-chevron-right"></i></button>
+    <div class="text-center text-white px-4" style="max-width: 90vw;">
+        <img id="lightbox-img" class="img-fluid mb-2" style="max-height: 60vh;">
+        <p id="lightbox-caption" class="text-white fw-medium mb-1" style="font-size:1.1rem;"></p>
+        <p id="lightbox-meta" class="small text-white-50 mb-2"></p>
+        @if($contest->status !== 'closed')
+        <button class="btn btn-outline-light" id="lightbox-vote">
+            <i class="far fa-thumbs-up me-1"></i>Vote (<span id="vote-count">0</span>)
+        </button>
+        @endif
+    </div>
+</div>
+
+<style>
+.contest-entry {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 8px;
+}
+.contest-entry img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+.contest-entry:hover img {
+    transform: scale(1.05);
+}
+.contest-entry .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+    padding: 8px;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.contest-entry:hover .overlay {
+    opacity: 1;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 1050;
+    align-items: center;
+    justify-content: center;
+}
+.lightbox.active {
+    display: flex;
+}
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 1rem;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 1051;
+}
+.lightbox-prev { left: 1rem; }
+.lightbox-next { right: 1rem; }
+.lightbox-nav:hover { background: rgba(255,255,255,0.3); }
+</style>
+
+@push('scripts')
+<script>
+(function() {
+    var entries = [];
+    var currentIndex = 0;
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    var contestStatus = '{{ $contest->status }}';
+    var isClosed = contestStatus === 'closed';
+
+    // Build entries array from DOM
+    document.querySelectorAll('.contest-entry').forEach(function(el) {
+        entries.push({
+            id: el.dataset.id,
+            photo_url: el.querySelector('img').src.replace('/thumbs/', '/print/'),
+            thumb_url: el.querySelector('img').src,
+            caption: el.querySelector('small')?.textContent || '',
+            votes: parseInt(el.dataset.votes) || 0,
+            voted: false
+        });
+    });
+
+    // Open lightbox on entry click
+    document.querySelectorAll('.contest-entry').forEach(function(el) {
+        el.addEventListener('click', function(ev) {
+            if (ev.target.closest('.vote-btn')) return;
+            currentIndex = parseInt(this.dataset.index);
+            openLightbox();
+        });
+    });
+
+    function openLightbox() {
+        var e = entries[currentIndex];
+        document.getElementById('lightbox-img').src = e.photo_url;
+        document.getElementById('lightbox-caption').textContent = e.caption;
+        document.getElementById('vote-count').textContent = e.votes;
+        var voteBtn = document.getElementById('lightbox-vote');
+        if (voteBtn) {
+            voteBtn.querySelector('i').className = e.voted ? 'fas fa-thumbs-up me-1' : 'far fa-thumbs-up me-1';
+            voteBtn.style.display = isClosed ? 'none' : 'inline-block';
+        }
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-prev').addEventListener('click', function() {
+        currentIndex = (currentIndex - 1 + entries.length) % entries.length;
+        openLightbox();
+    });
+    document.getElementById('lightbox-next').addEventListener('click', function() {
+        currentIndex = (currentIndex + 1) % entries.length;
+        openLightbox();
+    });
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+        if (e.target === this) closeLightbox();
+    });
+
+    // Vote in lightbox
+    document.getElementById('lightbox-vote')?.addEventListener('click', function() {
+        var e = entries[currentIndex];
+        e.voted = !e.voted;
+        e.votes += e.voted ? 1 : -1;
+        document.getElementById('vote-count').textContent = e.votes;
+        this.querySelector('i').className = e.voted ? 'fas fa-thumbs-up me-1' : 'far fa-thumbs-up me-1';
+
+        fetch('/api/contest-vote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ entry_id: e.id })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                e.votes = data.votes;
+                document.getElementById('vote-count').textContent = data.votes;
+            }
+        })
+        .catch(function() {});
+    });
+
+    // Vote buttons on grid
+    document.querySelectorAll('.vote-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(ev) {
+            ev.stopPropagation();
+            var entryId = parseInt(this.dataset.id);
+            var entry = entries.find(function(e) { return e.id == entryId; });
+            if (!entry) return;
+            entry.voted = !entry.voted;
+            entry.votes += entry.voted ? 1 : -1;
+            this.querySelector('i').className = entry.voted ? 'fas fa-thumbs-up' : 'far fa-thumbs-up';
+
+            fetch('/api/contest-vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ entry_id: entryId })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) entry.votes = data.votes;
+            })
+            .catch(function() {});
+        });
+    });
+
+    // Keyboard nav
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('lightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') { currentIndex = (currentIndex - 1 + entries.length) % entries.length; openLightbox(); }
+        if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % entries.length; openLightbox(); }
+    });
+})();
+</script>
+@endpush
 @endsection

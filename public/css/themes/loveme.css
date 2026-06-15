@@ -1,0 +1,29 @@
+:root {
+  /* Loveme Colors */
+  --primary: #86a0b6;
+  --primary-dark: #002642;
+  --secondary: #edf3f8;
+  --accent: #c9a86c;
+  --bg: #f9f9f9;
+  --text: #333333;
+  --text-light: #7a7a7a;
+  --white: #ffffff;
+  --error: #ff1a1a;
+  --success: #009a00;
+  --shadow: 0 5px 15px rgba(0,0,0,0.08);
+  
+  /* Loveme Spacing */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 30px;
+  --space-xl: 40px;
+  
+  /* Loveme Typography */
+  --font-body: 'Muli', 'Roboto', sans-serif;
+  --font-heading: 'Futura PT', sans-serif;
+  
+  /* Loveme Components */
+  --border-radius: 8px;
+  --hero-gradient: none;
+}

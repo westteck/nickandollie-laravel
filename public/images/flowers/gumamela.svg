@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="64" height="64">
+  <g transform="translate(50,50)" stroke-linejoin="round" stroke-linecap="round">
+    <!-- 5 broad petals -->
+    <g fill="#dc143c" stroke="#b22222" stroke-width="0.5">
+      <path d="M 0,-28 Q 15,-8 0,2 Q -15,-8 0,-28"/>
+      <path d="M 0,-28 Q 15,-8 0,2 Q -15,-8 0,-28" transform="rotate(72)"/>
+      <path d="M 0,-28 Q 15,-8 0,2 Q -15,-8 0,-28" transform="rotate(144)"/>
+      <path d="M 0,-28 Q 15,-8 0,2 Q -15,-8 0,-28" transform="rotate(216)"/>
+      <path d="M 0,-28 Q 15,-8 0,2 Q -15,-8 0,-28" transform="rotate(288)"/>
+    </g>
+    <!-- Stamen tube / pistil -->
+    <rect x="-1.5" y="-2" width="3" height="20" fill="#ffd700" stroke="#daa520" stroke-width="0.5"/>
+    <circle cx="0" cy="22" r="5" fill="#ff8c00" stroke="#daa520" stroke-width="0.5"/>
+    <!-- inner swirl -->
+    <circle r="6" fill="none" stroke="#b22222" stroke-width="0.5" opacity="0.6"/>
+  </g>
+</svg>

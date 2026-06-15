@@ -1,0 +1,29 @@
+:root {
+  /* Current Nick & Ollie Colors */
+  --primary: #8b7355;
+  --primary-dark: #6b5744;
+  --secondary: #d4c4b0;
+  --accent: #c9a86c;
+  --bg: #faf8f5;
+  --text: #3d3530;
+  --text-light: #7a726a;
+  --white: #ffffff;
+  --error: #c45c5c;
+  --success: #5c9c6b;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  
+  /* Current Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  
+  /* Current Typography */
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: Georgia, 'Times New Roman', serif;
+  
+  /* Current Components */
+  --border-radius: 8px;
+  --hero-gradient: linear-gradient(160deg, #f5ede0 0%, var(--bg) 60%);
+}

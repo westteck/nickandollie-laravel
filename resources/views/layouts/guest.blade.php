@@ -1,30 +1,70 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>@yield('title', config('app.name', 'Nick & Ollie'))</title>
+        @hasSection('meta_description')
+            <meta name="description" content="@yield('meta_description')">
+        @endif
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <!-- Theme CSS variables -->
+        <style>
+            :root {
+                --color-primary: #171d33;
+                --color-accent: #c2b8b7;
+                --color-body: #FAEBD7;
+                --color-sec: #36538f;
+            }
+        </style>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
+        <!-- Bootstrap 5 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Dark mode init (prevent flash) -->
+        <script>
+            if (localStorage.getItem('theme') === 'light' ||
+                (!localStorage.getItem('theme') && !document.documentElement.classList.contains('dark'))) {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
+
+        <!-- Page-specific scripts -->
+        @yield('scripts')
+    </head>
+    <body class="flex flex-col min-h-screen">
+
+        <!-- Background -->
+        <div class="fixed inset-0 -z-10" style="background-image: url('/back.jpg'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0" style="background-color: rgba(23,29,51,0.30);"></div>
         </div>
+
+        <!-- Floating blobs -->
+        <div class="floating-blob" data-position="top-left"></div>
+        <div class="floating-blob" data-position="bottom-right"></div>
+
+        <!-- Content -->
+        <div class="content-wrapper flex flex-col min-h-screen">
+            <main class="flex-1 flex flex-col justify-center py-12">
+                <div class="mx-auto w-full max-w-md px-4">
+                    {{ $slot }}
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-auto">
+            <div class="mx-auto max-w-6xl px-6 py-4">
+                <p class="text-center text-xs text-body/50">
+                    &copy; {{ date('Y') }} Nick &amp; Ollie Fortune. All rights reserved.
+                </p>
+            </div>
+        </footer>
+
     </body>
 </html>

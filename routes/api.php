@@ -244,3 +244,54 @@ Route::prefix('photo/{id}')->group(function () {
         return response()->json(['success' => true]);
     })->name('api.photo.enter-contest');
 })->name('api.photo');
+
+// Contest vote toggle
+Route::post('/contest-vote', function (\Illuminate\Http\Request $request) {
+    if (!auth()->check()) {
+        return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+    }
+
+    $entryId = (int) $request->input('entry_id', 0);
+    if (!$entryId) {
+        return response()->json(['success' => false, 'error' => 'Entry ID required'], 400);
+    }
+
+    $userId = auth()->id();
+    $entry = DB::table('contest_entries')->where('id', $entryId)->first();
+    if (!$entry) {
+        return response()->json(['success' => false, 'error' => 'Entry not found'], 404);
+    }
+
+    // Check if contest is still active
+    $contest = DB::table('contests')->where('id', $entry->contest_id)->first();
+    if (!$contest || $contest->status === 'closed') {
+        return response()->json(['success' => false, 'error' => 'Contest is closed'], 400);
+    }
+
+    $existing = DB::table('votes')
+        ->where('photo_id', $entry->photo_id)
+        ->where('user_id', $userId)
+        ->first();
+
+    if ($existing) {
+        DB::table('votes')->where('id', $existing->id)->delete();
+        DB::table('contest_entries')->where('id', $entryId)->decrement('votes');
+        $voted = false;
+    } else {
+        DB::table('votes')->insert([
+            'photo_id' => $entry->photo_id,
+            'user_id' => $userId,
+            'created_at' => now(),
+        ]);
+        DB::table('contest_entries')->where('id', $entryId)->increment('votes');
+        $voted = true;
+    }
+
+    $updatedEntry = DB::table('contest_entries')->where('id', $entryId)->first();
+
+    return response()->json([
+        'success' => true,
+        'voted' => $voted,
+        'votes' => $updatedEntry->votes ?? 0,
+    ]);
+})->name('api.contest.vote');

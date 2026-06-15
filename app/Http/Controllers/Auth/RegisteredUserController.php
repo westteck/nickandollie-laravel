@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeEmail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -118,6 +120,30 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        // Create address book entry for this user
+        $fullName = trim(($validated['first_name'] ?? '') . ' ' . ($validated['last_name'] ?? '')) ?: $validated['guest_name'];
+        DB::table('address_book')->insert([
+            'user_id' => $user->id,
+            'entry_name' => $fullName,
+            'first_name' => $validated['first_name'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'state' => $validated['state'] ?? null,
+            'zip' => $validated['zip'] ?? null,
+            'email' => $validated['phone_email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'mobile' => $validated['mobile'] ?? null,
+            'show_in_phonebook' => 1,
+            'created_at' => now(),
+        ]);
+
+        // Send welcome email (non-blocking: errors logged but not surfaced)
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Welcome email failed for user ' . $user->id . ': ' . $e->getMessage());
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

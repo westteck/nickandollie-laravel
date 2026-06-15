@@ -47,4 +47,29 @@ class PhonebookController extends Controller
             'group' => $group,
         ]);
     }
+
+    /**
+     * Alphabetical listing of all phonebook entries (phonebook_list.php equivalent).
+     */
+    public function all(\Illuminate\Http\Request $request): View
+    {
+        $entries = DB::table('address_book')
+            ->select('address_book.*', 'users.guest_name', 'users.connection', 'users.core_group')
+            ->leftJoin('users', 'address_book.user_id', '=', 'users.id')
+            ->where('address_book.show_in_phonebook', 1)
+            ->orderBy('address_book.entry_name')
+            ->get();
+
+        // Group by first letter
+        $grouped = [];
+        foreach ($entries as $e) {
+            $letter = strtoupper(substr($e->entry_name, 0, 1));
+            if (!ctype_alpha($letter)) $letter = '#';
+            if (!isset($grouped[$letter])) $grouped[$letter] = [];
+            $grouped[$letter][] = $e;
+        }
+        ksort($grouped);
+
+        return view('phonebook-all', compact('grouped'));
+    }
 }

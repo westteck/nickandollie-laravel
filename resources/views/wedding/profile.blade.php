@@ -9,12 +9,12 @@
     <div class="card mb-4">
         <div class="card-body">
             <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle bg-[#8b7355] text-white d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
                     {{ strtoupper(substr($profileUser->guest_name ?? $profileUser->first_name ?? 'G', 0, 1)) }}
                 </div>
                 <div>
                     <h2 class="mb-1">{{ $profileUser->guest_name ?? ($profileUser->first_name . ' ' . $profileUser->last_name) }}</h2>
-                    <span class="badge bg-[#8b7355]">{{ $relationshipLabel }}</span>
+                    <span class="badge bg-primary">{{ $relationshipLabel }}</span>
                     <p class="text-muted small mb-0 mt-1">
                         {{ $photoCount }} photo{{ $photoCount != 1 ? 's' : '' }} uploaded
                     </p>

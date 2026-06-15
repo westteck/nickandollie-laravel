@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="64" height="64">
+  <g transform="translate(50,50)">
+    <!-- 5 spiraled petals -->
+    <g fill="#fffaf0" stroke="#f0e6c8" stroke-width="0.5" stroke-linejoin="round">
+      <path d="M 0,-26 Q 14,-6 0,4 Q -14,-6 0,-26" transform="rotate(18)"/>
+      <path d="M 0,-26 Q 14,-6 0,4 Q -14,-6 0,-26" transform="rotate(90)"/>
+      <path d="M 0,-26 Q 14,-6 0,4 Q -14,-6 0,-26" transform="rotate(162)"/>
+      <path d="M 0,-26 Q 14,-6 0,4 Q -14,-6 0,-26" transform="rotate(234)"/>
+      <path d="M 0,-26 Q 14,-6 0,4 Q -14,-6 0,-26" transform="rotate(306)"/>
+    </g>
+    <!-- yellow center -->
+    <circle r="7" fill="#ffd700" stroke="#daa520" stroke-width="0.5"/>
+    <circle r="3" fill="#ff8c00"/>
+  </g>
+</svg>

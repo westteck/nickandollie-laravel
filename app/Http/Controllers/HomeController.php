@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(): View|RedirectResponse
     {
+        // Logged-in users go straight to gallery
+        if (Auth::check()) {
+            return redirect()->route('gallery');
+        }
+
         // Fetch hero content from site_pages table
         $hero_content = DB::table('site_pages')
             ->where('page_key', 'index_hero')

@@ -5,10 +5,10 @@
 @section('content')
 <div class="max-w-5xl mx-auto py-8 px-4">
     <h1 class="text-2xl font-bold mb-2" style="color: var(--color-primary)">Theme Settings</h1>
-    <p class="text-sm text-gray-500 mb-8">Choose a preset or customize colors manually.</p>
+    <p class="text-sm text-body/70 mb-8">Choose a preset or customize colors manually.</p>
 
     @if(session('status'))
-        <div class="mb-6 p-3 rounded-lg bg-green-100 text-green-800 text-sm">{{ session('status') }}</div>
+        <div class="mb-6 p-3 rounded-lg bg-green-100 text-accent text-sm">{{ session('status') }}</div>
     @endif
     @if(session('error'))
         <div class="mb-6 p-3 rounded-lg bg-red-100 text-red-800 text-sm">{{ session('error') }}</div>
@@ -21,7 +21,7 @@
         <h2 class="text-lg font-semibold mb-4" style="color: var(--color-primary)">Theme Presets</h2>
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
             @foreach($presets as $key => $preset)
-                <div class="preset-card rounded-xl border overflow-hidden {{ $currentPreset === $key ? 'ring-2 ring-green-500' : 'border-gray-200' }}"
+                <div class="preset-card rounded-xl border overflow-hidden {{ $currentPreset === $key ? 'ring-2 ring-green-500' : 'border-sec/30' }}"
                      data-preset="{{ $key }}"
                      style="background: {{ $preset['background'] }}; color: {{ $preset['text'] }};">
 
@@ -79,7 +79,7 @@
             <div class="flex items-center gap-3">
                 <span class="text-sm font-medium" style="color: var(--color-primary)">Previewing:</span>
                 <span id="preview-name" class="text-sm font-semibold"></span>
-                <span class="text-xs text-gray-500">(temporarily applied — not saved)</span>
+                <span class="text-xs text-body/70">(temporarily applied — not saved)</span>
             </div>
             <div class="flex gap-2">
                 <button id="preview-apply-btn" type="button" class="text-xs px-3 py-1.5 rounded font-medium text-white" style="background: var(--color-primary);">
@@ -95,9 +95,9 @@
     {{-- ============================================= --}}
     {{-- CUSTOM COLOR EDITOR --}}
     {{-- ============================================= --}}
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <div class="bg-white rounded-xl border border-sec/30 p-6">
         <h2 class="text-lg font-semibold mb-4" style="color: var(--color-primary)">Custom Colors</h2>
-        <p class="text-sm text-gray-500 mb-6">Fine-tune individual color values. These take precedence over any preset.</p>
+        <p class="text-sm text-body/70 mb-6">Fine-tune individual color values. These take precedence over any preset.</p>
 
         <form method="POST" action="{{ route('admin.theme.update') }}" class="space-y-6">
             @csrf
@@ -118,15 +118,15 @@
                 <label for="{{ $key }}" class="block text-sm font-medium mb-1">{{ $label }}</label>
                 <div class="flex items-center gap-3">
                     <input type="color" name="{{ $key }}" id="{{ $key }}" value="{{ $currentColors[$key] }}"
-                        class="h-10 w-16 rounded cursor-pointer border border-gray-300"
+                        class="h-10 w-16 rounded cursor-pointer border border-sec/30"
                         oninput="document.getElementById('{{ $key }}_hex').value = this.value">
                     <input type="text" id="{{ $key }}_hex" value="{{ $currentColors[$key] }}" maxlength="7"
-                        class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono"
+                        class="flex-1 rounded-lg border border-sec/30 px-3 py-2 text-sm font-mono"
                         pattern="^#[0-9a-fA-F]{6}$"
                         oninput="if(/^#[0-9a-fA-F]{6}$/.test(this.value)) document.getElementById('{{ $key }}').value = this.value">
                 </div>
                 @error($key)
-                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
             @endforeach

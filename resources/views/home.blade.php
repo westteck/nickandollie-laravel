@@ -1,106 +1,151 @@
 @extends('layouts.app')
 @section('title', 'Nick & Ollie Fortune Wedding')
-@section('meta_description', 'Wedding photo sharing site for Nick & Ollie Fortune.')
+@section('meta_description', 'Join Nick & Ollie Fortune\'s wedding photo sharing platform — upload photos, enter contests, and share memories from your special day.')
 @section('content')
-{{-- Hero Section with DB-driven content --}}
+
+{{-- Hero Section --}}
 <section class="hero-section" aria-label="Wedding announcement">
     <div class="hero-content">
         {!! $hero_content !!}
     </div>
 </section>
 
-{{-- Main Content --}}
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12">
-    <div class="grid gap-6 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
-        <div class="space-y-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-[#8b7355]">Wedding Photo Sharing</p>
-            <h2 class="text-4xl font-bold leading-tight sm:text-5xl">Welcome to Our Celebration</h2>
-            <p class="max-w-2xl text-lg text-slate-700">Tulay sa aming pagdiriwang — ikuwento ang iyong kwento, ikuwento ang saya.</p>
-            <div class="flex flex-wrap gap-3 text-sm font-medium">
-                <a href="{{ route('gallery') }}" class="rounded-full bg-[#8b7355] px-5 py-3 text-white">View Gallery</a>
-                @auth
-                    <a href="{{ route('upload') }}" class="rounded-full border border-[#8b7355] px-5 py-3 text-[#8b7355]">Upload Photos</a>
-                    <a href="{{ route('contest') }}" class="rounded-full border border-[#8b7355] px-5 py-3 text-[#8b7355]">Contests</a>
-                @else
-                    <a href="{{ route('register') }}" class="rounded-full border border-[#8b7355] px-5 py-3 text-[#8b7355]">Join Us</a>
-                @endauth
-            </div>
-        </div>
-        <div class="grid gap-4 rounded-[1.25rem] border border-black/5 bg-white p-5 shadow-sm sm:p-6">
-            <div class="grid grid-cols-2 gap-3 text-center text-sm">
-                <div class="rounded-2xl bg-[#faf8f5] p-4"><div class="text-[11px] uppercase tracking-[0.25em] text-slate-500">Date</div><div class="mt-1 font-semibold">November 13, 2026</div></div>
-                <div class="rounded-2xl bg-[#faf8f5] p-4"><div class="text-[11px] uppercase tracking-[0.25em] text-slate-500">Venue</div><div class="mt-1 font-semibold">Los Angeles, CA</div></div>
-            </div>
-            @guest
-            <div class="space-y-3 rounded-2xl border border-[#d4c4b0]/60 bg-[#faf8f5] p-4 text-sm text-slate-700">
-                <p class="font-semibold text-[#8b7355]">Join the Celebration</p>
-                <p>Create an account to upload photos, enter contests, and share memories with Nick &amp; Ollie.</p>
-                <div class="flex gap-2">
-                    <a href="{{ route('register') }}" class="rounded-md bg-[#8b7355] px-4 py-2 text-white text-sm">Register</a>
-                    <a href="{{ route('login') }}" class="rounded-md border border-[#8b7355] px-4 py-2 text-[#8b7355] text-sm">Login</a>
-                </div>
-            </div>
-            @endguest
-            <div class="grid gap-3 sm:grid-cols-2">
-                <div class="rounded-2xl bg-[#faf8f5] p-4 text-sm">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Gallery</p>
-                    <p class="mt-1 font-medium text-slate-700">Browse {{ $totalPhotos ?? 0 }}+ wedding photos from family and friends.</p>
-                    <a href="{{ route('gallery') }}" class="mt-2 inline-block text-[#8b7355] text-sm font-medium">View All →</a>
-                </div>
-                <div class="rounded-2xl bg-[#faf8f5] p-4 text-sm">
-                    <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Contests</p>
-                    <p class="mt-1 font-medium text-slate-700">Enter your favorite photos in wedding photo contests.</p>
-                    <a href="{{ route('contest') }}" class="mt-2 inline-block text-[#8b7355] text-sm font-medium">See Contests →</a>
-                </div>
-            </div>
-        </div>
-    </div>
+{{-- Flower Icons Strip — ported from legacy index.php --}}
+<div class="flower-strip" style="text-align:center;padding:10px 0;opacity:0.9;">
+    <img src="/images/flowers/sampaguita.svg" alt="Sampaguita" width="48" height="48"
+         style="margin:0 8px;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12));transition:transform .25s ease,filter .25s;"
+         data-tooltip="Sampaguita (Jasminum sambac) — Philippines' national flower. Symbolizes purity, divine hope, and faithful union."
+         onmouseover="this.style.transform='scale(1.15)';this.style.filter='drop-shadow(0 4px 6px rgba(0,0,0,.18))'"
+         onmouseout="this.style.transform='scale(1)';this.style.filter='drop-shadow(0 2px 3px rgba(0,0,0,.12))'">
+    <img src="/images/flowers/waling_waling.svg" alt="Waling-Waling" width="48" height="48"
+         style="margin:0 8px;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12));transition:transform .25s ease,filter .25s;"
+         data-tooltip="Waling-Waling (Vanda sanderiana) — Queen of Philippine Orchids. Epitome of exotic beauty and regal elegance."
+         onmouseover="this.style.transform='scale(1.15)';this.style.filter='drop-shadow(0 4px 6px rgba(0,0,0,.18))'"
+         onmouseout="this.style.transform='scale(1)';this.style.filter='drop-shadow(0 2px 3px rgba(0,0,0,.12))'">
+    <img src="/images/flowers/gumamela.svg" alt="Gumamela" width="48" height="48"
+         style="margin:0 8px;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12));transition:transform .25s ease,filter .25s;"
+         data-tooltip="Gumamela (Hibiscus rosa-sinensis) — Delicate beauty and the fleeting, ardent passion of new love."
+         onmouseover="this.style.transform='scale(1.15)';this.style.filter='drop-shadow(0 4px 6px rgba(0,0,0,.18))'"
+         onmouseout="this.style.transform='scale(1)';this.style.filter='drop-shadow(0 2px 3px rgba(0,0,0,.12))'">
+    <img src="/images/flowers/calachuchi.svg" alt="Calachuchi" width="48" height="48"
+         style="margin:0 8px;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12));transition:transform .25s ease,filter .25s;"
+         data-tooltip="Calachuchi (Plumeria) — Beloved in Filipino celebrations. New beginnings and the blossoming of two souls."
+         onmouseover="this.style.transform='scale(1.15)';this.style.filter='drop-shadow(0 4px 6px rgba(0,0,0,.18))'"
+         onmouseout="this.style.transform='scale(1)';this.style.filter='drop-shadow(0 2px 3px rgba(0,0,0,.12))'">
+</div>
 
-    <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <h3 class="text-lg font-semibold text-[#8b7355]">Share Memories</h3>
-            <p class="mt-2 text-sm text-slate-700">Upload your favorite moments from the wedding celebration.</p>
+{{-- Login / Register Panel --}}
+<section class="mx-auto max-w-md px-4 py-6" x-data="{ tab: 'login' }">
+    <div class="glass-panel overflow-hidden rounded-2xl">
+
+        {{-- Tabs --}}
+        <div class="flex border-b border-sec/20">
+            <button @click="tab = 'login'"
+                    :class="tab === 'login' ? 'text-sec border-b-2 border-sec' : 'text-body hover:text-sec'"
+                    class="flex-1 py-3.5 text-sm font-semibold uppercase tracking-widest transition">
+                Login
+            </button>
+            <button @click="tab = 'register'"
+                    :class="tab === 'register' ? 'text-sec border-b-2 border-sec' : 'text-body hover:text-sec'"
+                    class="flex-1 py-3.5 text-sm font-semibold uppercase tracking-widest transition">
+                Create Account
+            </button>
         </div>
-        <div class="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <h3 class="text-lg font-semibold text-[#8b7355]">Contests &amp; Voting</h3>
-            <p class="mt-2 text-sm text-slate-700">Rate photos, favorite your favorites, and enter contests.</p>
+
+        {{-- Login Form --}}
+        <div x-show="tab === 'login'" class="p-6 space-y-4">
+            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <input type="text" name="login" placeholder="Email or Username"
+                           class="w-full rounded-xl border border-sec/30 bg-white/70 px-4 py-3 text-sm text-night placeholder-body/60 backdrop-blur-sm focus:border-sec focus:outline-none focus:ring-1 focus:ring-sec/50"
+                           required autocomplete="username">
+                </div>
+                <div>
+                    <input type="password" name="password" placeholder="Password"
+                           class="w-full rounded-xl border border-sec/30 bg-white/70 px-4 py-3 text-sm text-night placeholder-body/60 backdrop-blur-sm focus:border-sec focus:outline-none focus:ring-1 focus:ring-sec/50"
+                           required autocomplete="current-password">
+                </div>
+                <button type="submit" class="w-full rounded-xl bg-primary py-3 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-sec">
+                    Login
+                </button>
+            </form>
+            <p class="text-center text-xs text-body/80">
+                <a href="{{ route('password.request') }}" class="hover:text-sec">Forgot your password?</a>
+            </p>
         </div>
-        <div class="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <h3 class="text-lg font-semibold text-[#8b7355]">Community</h3>
-            <p class="mt-2 text-sm text-slate-700">Connect with family and friends through the phonebook.</p>
-            <a href="{{ route('phonebook') }}" class="mt-2 inline-block text-[#8b7355] text-sm font-medium">View Phonebook →</a>
+
+        {{-- Register Form --}}
+        <div x-show="tab === 'register'" x-cloak class="p-6 space-y-4">
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <input type="text" name="name" placeholder="Full Name"
+                           class="w-full rounded-xl border border-sec/30 bg-white/70 px-4 py-3 text-sm text-night placeholder-body/60 backdrop-blur-sm focus:border-sec focus:outline-none focus:ring-1 focus:ring-sec/50"
+                           required autocomplete="name">
+                </div>
+                <div>
+                    <input type="email" name="email" placeholder="Email Address"
+                           class="w-full rounded-xl border border-sec/30 bg-white/70 px-4 py-3 text-sm text-night placeholder-body/60 backdrop-blur-sm focus:border-sec focus:outline-none focus:ring-1 focus:ring-sec/50"
+                           required autocomplete="email">
+                </div>
+                <div>
+                    <input type="password" name="password" placeholder="Password"
+                           class="w-full rounded-xl border border-sec/30 bg-white/70 px-4 py-3 text-sm text-night placeholder-body/60 backdrop-blur-sm focus:border-sec focus:outline-none focus:ring-1 focus:ring-sec/50"
+                           required autocomplete="new-password">
+                </div>
+                <div>
+                    <input type="password" name="password_confirmation" placeholder="Confirm Password"
+                           class="w-full rounded-xl border border-sec/30 bg-white/70 px-4 py-3 text-sm text-night placeholder-body/60 backdrop-blur-sm focus:border-sec focus:outline-none focus:ring-1 focus:ring-sec/50"
+                           required autocomplete="new-password">
+                </div>
+                <button type="submit" class="w-full rounded-xl bg-primary py-3 text-sm font-semibold uppercase tracking-widest text-white transition hover:bg-sec">
+                    Create Account
+                </button>
+            </form>
         </div>
-        <div class="rounded-[1.25rem] bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <h3 class="text-lg font-semibold text-[#8b7355]">Your Profile</h3>
-            <p class="mt-2 text-sm text-slate-700">Track your uploads, favorites, and comments all in one place.</p>
-            @auth
-                <a href="{{ route('wedding.profile', auth()->id()) }}" class="mt-2 inline-block text-[#8b7355] text-sm font-medium">View Profile →</a>
-            @endauth
-        </div>
+
     </div>
 </section>
 
 <style>
+[x-cloak] { display: none !important; }
+
 .hero-section {
-    background: linear-gradient(135deg, #faf8f5 0%, #f5f0eb 100%);
-    border-bottom: 1px solid #d4c4b0;
-    padding: 3rem 1rem;
+    background: linear-gradient(160deg, #f5ede0 0%, #faf8f5 60%);
+    padding: 3rem 1.5rem 2rem;
     text-align: center;
 }
 .hero-content {
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
 }
 .hero-content h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
     color: #8b7355;
     margin-bottom: 0.5rem;
 }
 .hero-content .hero__date {
-    font-size: 1.25rem;
-    color: #6b5a47;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.15em;
+    color: #7a726a;
+    margin-top: 0.5rem;
+}
+.hero-content .hero__tagline {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #3d3530;
     margin-top: 0.5rem;
 }
 </style>
+
 @endsection

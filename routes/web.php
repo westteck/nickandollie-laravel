@@ -18,6 +18,7 @@ use App\Http\Controllers\WeddingProfileController;
 // Public site routes
 Route::get('/', HomeController::class)->name('home');
 Route::get('/phonebook', PhonebookController::class)->name('phonebook');
+Route::get('/phonebook/all', [PhonebookController::class, 'all'])->name('phonebook.all');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/photo/{id}', [PhotoController::class, 'show'])->name('photo.show');
 Route::get('/profile/{id?}', [WeddingProfileController::class, 'show'])->name('wedding.profile');
@@ -61,5 +62,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update.post');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Profile tab data endpoints
+    Route::get('/profile/favorites', [ProfileController::class, 'favorites'])->name('profile.favorites');
+    Route::get('/profile/uploads', [ProfileController::class, 'uploads'])->name('profile.uploads');
+    Route::get('/profile/votes', [ProfileController::class, 'votes'])->name('profile.votes');
+    Route::get('/profile/comments', [ProfileController::class, 'comments'])->name('profile.comments');
 });

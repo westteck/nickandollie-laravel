@@ -1,2 +1,13 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Block sensitive paths
+Disallow: /api/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /inc/
+Disallow: /vendor/
+Disallow: /storage/app/
+Disallow: /.env
+
+Sitemap: https://new.nickandollie.com/sitemap.xml

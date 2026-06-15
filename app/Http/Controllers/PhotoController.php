@@ -84,7 +84,7 @@ class PhotoController extends Controller
             ->orderBy('end_date', 'asc')
             ->get()
             ->map(function ($c) {
-                return [
+                return (object) [
                     'id' => $c->id,
                     'title' => $c->title,
                     'end_date' => $c->end_date,

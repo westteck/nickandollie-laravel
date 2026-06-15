@@ -340,7 +340,7 @@
     cursor: pointer;
 }
 .star-rating i {
-    color: #d4c4b0;
+    color: #c2b8b7;
     font-size: 1.25rem;
     transition: color 0.2s;
 }

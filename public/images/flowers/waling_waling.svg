@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="64" height="64">
+  <!-- Petals -->
+  <g transform="translate(50,50)" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <!-- 3 upper sepals -->
+    <path d="M 0,-28 Q 10,-8 0,0 Q -10,-8 0,-28" fill="#9370db" stroke="#6b3fa0" stroke-width="1"/>
+    <path d="M 0,-28 Q 10,-8 0,0 Q -10,-8 0,-28" fill="#9370db" stroke="#6b3fa0" stroke-width="1" transform="rotate(65)"/>
+    <path d="M 0,-28 Q 10,-8 0,0 Q -10,-8 0,-28" fill="#9370db" stroke="#6b3fa0" stroke-width="1" transform="rotate(-65)"/>
+    <!-- 2 side petals (wings) -->
+    <path d="M 0,-18 Q 22,-10 0,0 Q -22,-10 0,-18" fill="#ba55d3" stroke="#6b3fa0" stroke-width="1" transform="rotate(35)"/>
+    <path d="M 0,-18 Q 22,-10 0,0 Q -22,-10 0,-18" fill="#ba55d3" stroke="#6b3fa0" stroke-width="1" transform="rotate(-35)"/>
+    <!-- Labellum (gold lip) -->
+    <path d="M -12,8 Q -6,28 0,34 Q 6,28 12,8 Q 0,18 -12,8" fill="#ffd700" stroke="#daa520" stroke-width="1"/>
+    <!-- Column -->
+    <rect x="-2" y="-6" width="4" height="14" fill="#800080" rx="1"/>
+  </g>
+</svg>
