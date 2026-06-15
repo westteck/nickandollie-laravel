@@ -251,17 +251,17 @@
 
         processedFiles.forEach((item, index) => {
             const div = document.createElement('div');
-            div.className = 'relative group aspect-square rounded-xl overflow-hidden bg-slate-100';
+            div.className = 'upload-preview-item';
 
             const img = document.createElement('img');
             img.src = URL.createObjectURL(item.file);
-            img.className = 'h-full w-full object-cover';
             img.alt = `Preview ${index + 1}`;
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
-            removeBtn.className = 'absolute top-1.5 right-1.5 h-7 w-7 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100';
-            removeBtn.innerHTML = `<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            removeBtn.className = 'btn btn-sm btn-danger position-absolute';
+            removeBtn.style.cssText = 'top:4px;right:4px;padding:2px 6px;font-size:0.75rem;line-height:1;';
+            removeBtn.innerHTML = '&times;';
             removeBtn.title = 'Remove';
             removeBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -269,7 +269,8 @@
             });
 
             const badge = document.createElement('span');
-            badge.className = 'absolute bottom-1.5 left-1.5 rounded-full bg-black/50 px-2 py-0.5 text-xs text-white';
+            badge.className = 'position-absolute bottom-0 start-0 m-1 badge bg-dark';
+            badge.style.fontSize = '0.7rem';
             badge.textContent = index + 1;
 
             div.appendChild(img);

@@ -1,81 +1,75 @@
 @extends('layouts.app')
 @section('title', 'Admin Contests')
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12">
-    <div class="mb-6 flex items-center justify-between">
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Admin</p>
-            <h1 class="text-3xl font-bold sm:text-4xl">Contests</h1>
+            <p class="text-uppercase text-muted small mb-1" style="letter-spacing: 0.2em;">Admin</p>
+            <h1 class="mb-0" style="color: var(--primary);">Contests</h1>
         </div>
-        <a href="{{ route('admin.contests') }}" class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary">
-            + New Contest
-        </a>
+        <a href="{{ route('admin.contests') }}" class="btn btn-primary">+ New Contest</a>
     </div>
 
     @if(session('status'))
-        <div class="mb-4 rounded-md bg-sec/20 p-3 text-sm text-accent">{{ session('status') }}</div>
+        <div class="alert alert-success">{{ session('status') }}</div>
     @endif
     @if(session('error'))
-        <div class="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-800">{{ session('error') }}</div>
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     {{-- Contest List --}}
-    <div class="rounded-lg border bg-white shadow-sm">
-        <div class="border-b px-4 py-3">
-            <h2 class="font-semibold text-slate-800">All Contests</h2>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">All Contests</h5>
         </div>
         @if($contests->isEmpty())
-            <div class="p-8 text-center text-body/70">No contests yet.</div>
+            <div class="card-body text-center text-muted py-4">No contests yet.</div>
         @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b bg-slate-50 text-left text-body/80">
-                            <th class="px-4 py-3 font-medium">Title</th>
-                            <th class="px-4 py-3 font-medium">Icon</th>
-                            <th class="px-4 py-3 font-medium">Status</th>
-                            <th class="px-4 py-3 font-medium">Start</th>
-                            <th class="px-4 py-3 font-medium">End</th>
-                            <th class="px-4 py-3 font-medium">Prize</th>
-                            <th class="px-4 py-3 font-medium">Actions</th>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Icon</th>
+                            <th>Status</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Prize</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody>
                         @foreach($contests as $contest)
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-4 py-3 font-medium text-slate-800">{{ $contest->title }}</td>
-                                <td class="px-4 py-3 text-body/80">
+                            <tr>
+                                <td class="fw-medium">{{ $contest->title }}</td>
+                                <td>
                                     @if($contest->icon)
                                         <i class="{{ $contest->icon }}"></i>
                                     @else
-                                        <span class="text-body/60">—</span>
+                                        <span class="text-muted">—</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3">
-                                    <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                                        @if($contest->status === 'active') bg-green-100 text-green-700
-                                        @elseif($contest->status === 'closed') bg-red-100 text-red-700
-                                        @elseif($contest->status === 'draft') bg-slate-100 text-body/80
-                                        @else bg-yellow-100 text-yellow-700 @endif">
-                                        {{ ucfirst($contest->status) }}
-                                    </span>
+                                <td>
+                                    @php
+                                        $statusClass = match($contest->status) {
+                                            'active' => 'bg-success',
+                                            'closed' => 'bg-danger',
+                                            'draft' => 'bg-secondary',
+                                            default => 'bg-warning text-dark',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $statusClass }}">{{ ucfirst($contest->status) }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-body/80">{{ $contest->start_date ? \Carbon\Carbon::parse($contest->start_date)->format('M j, Y') : '—' }}</td>
-                                <td class="px-4 py-3 text-body/80">{{ $contest->end_date ? \Carbon\Carbon::parse($contest->end_date)->format('M j, Y') : '—' }}</td>
-                                <td class="px-4 py-3 text-body/80">{{ $contest->prize ?: '—' }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <a href="{{ route('admin.contests', ['edit' => $contest->id]) }}"
-                                           class="rounded px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Edit</a>
-                                        <form method="POST" action="{{ route('admin.contests.destroy', $contest->id) }}"
-                                              onsubmit="return confirm('Delete this contest?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="rounded px-2 py-1 text-xs font-medium text-red-400 hover:bg-red-50">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </div>
+                                <td>{{ $contest->start_date ? \Carbon\Carbon::parse($contest->start_date)->format('M j, Y') : '—' }}</td>
+                                <td>{{ $contest->end_date ? \Carbon\Carbon::parse($contest->end_date)->format('M j, Y') : '—' }}</td>
+                                <td>{{ $contest->prize ?: '—' }}</td>
+                                <td>
+                                    <a href="{{ route('admin.contests', ['edit' => $contest->id]) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                                    <form method="POST" action="{{ route('admin.contests.destroy', $contest->id) }}" class="d-inline" onsubmit="return confirm('Delete this contest?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
@@ -87,87 +81,68 @@
 
     {{-- Create / Edit Form --}}
     @php $isEditing = $editing !== null; @endphp
-    <div class="mt-8 rounded-lg border bg-white shadow-sm">
-        <div class="border-b px-4 py-3">
-            <h2 class="font-semibold text-slate-800">{{ $isEditing ? 'Edit Contest' : 'Create Contest' }}</h2>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">{{ $isEditing ? 'Edit Contest' : 'Create Contest' }}</h5>
         </div>
-        <form method="POST" action="{{ $isEditing ? route('admin.contests.update', $editing->id) : route('admin.contests.store') }}"
-              class="space-y-4 p-6">
-            @csrf
-            @if($isEditing)
-                @method('PUT')
-            @endif
-
-            <div class="grid gap-4 sm:grid-cols-2">
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Title *</label>
-                    <input type="text" name="title" value="{{ old('title', $isEditing ? $editing->title : '') }}"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]"
-                           required>
-                </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Icon (e.g. fa-trophy)</label>
-                    <input type="text" name="icon" value="{{ old('icon', $isEditing ? $editing->icon : '') }}"
-                           placeholder="fa-trophy"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Status</label>
-                    <select name="status"
-                            class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                        @foreach(['draft', 'active', 'inactive', 'closed'] as $status)
-                            <option value="{{ $status }}"
-                                {{ (old('status', $isEditing ? $editing->status : 'draft') === $status) ? 'selected' : '' }}>
-                                {{ ucfirst($status) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Prize</label>
-                    <input type="text" name="prize" value="{{ old('prize', $isEditing ? $editing->prize : '') }}"
-                           placeholder="e.g. Gift card"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Start Date</label>
-                    <input type="date" name="start_date"
-                           value="{{ old('start_date', $isEditing && $editing->start_date ? \Carbon\Carbon::parse($editing->start_date)->format('Y-m-d') : '') }}"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">End Date</label>
-                    <input type="date" name="end_date"
-                           value="{{ old('end_date', $isEditing && $editing->end_date ? \Carbon\Carbon::parse($editing->end_date)->format('Y-m-d') : '') }}"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                </div>
-            </div>
-
-            <div>
-                <label class="mb-1 block text-sm font-medium text-body">Description</label>
-                <textarea name="description" rows="3"
-                          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">{{ old('description', $isEditing ? $editing->description : '') }}</textarea>
-            </div>
-
-            <div>
-                <label class="mb-1 block text-sm font-medium text-body">Rules</label>
-                <textarea name="rules" rows="3"
-                          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">{{ old('rules', $isEditing ? $editing->rules : '') }}</textarea>
-            </div>
-
-            <div class="flex items-center gap-3 pt-2">
-                <button type="submit"
-                        class="rounded-md bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary">
-                    {{ $isEditing ? 'Update Contest' : 'Create Contest' }}
-                </button>
+        <div class="card-body">
+            <form method="POST" action="{{ $isEditing ? route('admin.contests.update', $editing->id) : route('admin.contests.store') }}">
+                @csrf
                 @if($isEditing)
-                    <a href="{{ route('admin.contests') }}"
-                       class="rounded-md border border-slate-300 px-5 py-2 text-sm font-medium text-body/80 hover:bg-slate-50">
-                        Cancel
-                    </a>
+                    @method('PUT')
                 @endif
-            </div>
-        </form>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Title *</label>
+                        <input type="text" name="title" value="{{ old('title', $isEditing ? $editing->title : '') }}" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Icon (e.g. fa-trophy)</label>
+                        <input type="text" name="icon" value="{{ old('icon', $isEditing ? $editing->icon : '') }}" placeholder="fa-trophy" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            @foreach(['draft', 'active', 'inactive', 'closed'] as $status)
+                                <option value="{{ $status }}" {{ (old('status', $isEditing ? $editing->status : 'draft') === $status) ? 'selected' : '' }}>
+                                    {{ ucfirst($status) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Prize</label>
+                        <input type="text" name="prize" value="{{ old('prize', $isEditing ? $editing->prize : '') }}" placeholder="e.g. Gift card" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" name="start_date" value="{{ old('start_date', $isEditing && $editing->start_date ? \Carbon\Carbon::parse($editing->start_date)->format('Y-m-d') : '') }}" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="end_date" value="{{ old('end_date', $isEditing && $editing->end_date ? \Carbon\Carbon::parse($editing->end_date)->format('Y-m-d') : '') }}" class="form-control">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" rows="3" class="form-control">{{ old('description', $isEditing ? $editing->description : '') }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Rules</label>
+                    <textarea name="rules" rows="3" class="form-control">{{ old('rules', $isEditing ? $editing->rules : '') }}</textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">{{ $isEditing ? 'Update Contest' : 'Create Contest' }}</button>
+                    @if($isEditing)
+                        <a href="{{ route('admin.contests') }}" class="btn btn-outline-secondary">Cancel</a>
+                    @endif
+                </div>
+            </form>
+        </div>
     </div>
-</section>
+</div>
 @endsection

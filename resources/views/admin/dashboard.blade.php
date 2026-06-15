@@ -1,125 +1,157 @@
 @extends('layouts.app')
 @section('title', 'Admin Dashboard')
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex flex-col gap-2">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Admin</p>
-        <h1 class="text-3xl font-bold sm:text-4xl">Dashboard</h1>
-        <p class="max-w-2xl text-body">Overview of wedding site activity and quick admin actions.</p>
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p class="text-uppercase text-muted small mb-1" style="letter-spacing: 0.2em;">Admin</p>
+            <h1 class="mb-1" style="color: var(--primary);">Dashboard</h1>
+            <p class="text-muted mb-0">Overview of wedding site activity and quick admin actions.</p>
+        </div>
     </div>
 
     {{-- Stats Row --}}
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <div class="rounded-2xl glass-panel p-5 text-center">
-            <p class="text-3xl font-bold text-sec">{{ $stats['users'] }}</p>
-            <p class="text-xs uppercase tracking-widest text-body/60 mt-1">Guests</p>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="h2 mb-0" style="color: var(--primary);">{{ $stats['users'] }}</p>
+                    <p class="text-muted small text-uppercase mb-0 mt-1">Guests</p>
+                </div>
+            </div>
         </div>
-        <div class="rounded-2xl glass-panel p-5 text-center">
-            <p class="text-3xl font-bold text-sec">{{ $stats['photos'] }}</p>
-            <p class="text-xs uppercase tracking-widest text-body/60 mt-1">Photos</p>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="h2 mb-0" style="color: var(--primary);">{{ $stats['photos'] }}</p>
+                    <p class="text-muted small text-uppercase mb-0 mt-1">Photos</p>
+                </div>
+            </div>
         </div>
-        <div class="rounded-2xl glass-panel p-5 text-center">
-            <p class="text-3xl font-bold text-sec">{{ $stats['comments'] }}</p>
-            <p class="text-xs uppercase tracking-widest text-body/60 mt-1">Comments</p>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="h2 mb-0" style="color: var(--primary);">{{ $stats['comments'] }}</p>
+                    <p class="text-muted small text-uppercase mb-0 mt-1">Comments</p>
+                </div>
+            </div>
         </div>
-        <div class="rounded-2xl glass-panel p-5 text-center">
-            <p class="text-3xl font-bold text-sec">{{ $stats['votes'] }}</p>
-            <p class="text-xs uppercase tracking-widest text-body/60 mt-1">Votes</p>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="h2 mb-0" style="color: var(--primary);">{{ $stats['votes'] }}</p>
+                    <p class="text-muted small text-uppercase mb-0 mt-1">Votes</p>
+                </div>
+            </div>
         </div>
-        <div class="rounded-2xl glass-panel p-5 text-center">
-            <p class="text-3xl font-bold text-sec">{{ $stats['contests'] }}</p>
-            <p class="text-xs uppercase tracking-widest text-body/60 mt-1">Active Contests</p>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <p class="h2 mb-0" style="color: var(--primary);">{{ $stats['contests'] }}</p>
+                    <p class="text-muted small text-uppercase mb-0 mt-1">Active Contests</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="row g-4 mb-4">
         {{-- Recent Uploads --}}
-        <div class="rounded-2xl glass-panel overflow-hidden">
-            <div class="border-b border-sec/20 px-5 py-3 flex items-center justify-between">
-                <h2 class="font-semibold text-slate-800">Recent Uploads</h2>
-                <a href="{{ route('gallery') }}" class="text-xs text-sec hover:underline">View Gallery</a>
-            </div>
-            <div class="p-4">
-                @if($recentPhotos->isEmpty())
-                    <p class="text-sm text-body/60 text-center py-4">No uploads yet.</p>
-                @else
-                    <div class="grid grid-cols-4 gap-2">
-                        @foreach($recentPhotos as $photo)
-                            <a href="{{ route('photo.show', $photo->id) }}" class="aspect-square overflow-hidden rounded-lg">
-                                <img src="/storage/thumbs/{{ $photo->thumb_filename }}"
-                                     alt="Photo"
-                                     class="h-full w-full object-cover hover:scale-105 transition-transform"
-                                     onerror="this.src='/storage/originals/{{ $photo->thumb_filename }}'">
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Uploads</h5>
+                    <a href="{{ route('gallery') }}" class="small" style="color: var(--primary);">View Gallery</a>
+                </div>
+                <div class="card-body">
+                    @if($recentPhotos->isEmpty())
+                        <p class="text-muted text-center py-3 mb-0">No uploads yet.</p>
+                    @else
+                        <div class="row g-2">
+                            @foreach($recentPhotos as $photo)
+                                <div class="col-3">
+                                    <a href="{{ route('photo.show', $photo->id) }}" class="d-block" style="aspect-ratio:1;overflow:hidden;border-radius:8px;">
+                                        <img src="/storage/thumbs/{{ $photo->thumb_filename }}"
+                                             alt="Photo"
+                                             class="img-fluid w-100 h-100"
+                                             style="object-fit:cover;"
+                                             onerror="this.src='/storage/originals/{{ $photo->thumb_filename }}'">
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
 
         {{-- Recent Registrations --}}
-        <div class="rounded-2xl glass-panel overflow-hidden">
-            <div class="border-b border-sec/20 px-5 py-3">
-                <h2 class="font-semibold text-slate-800">Recent Registrations</h2>
-            </div>
-            <div class="p-4">
-                @if($recentUsers->isEmpty())
-                    <p class="text-sm text-body/60 text-center py-4">No registrations yet.</p>
-                @else
-                    <div class="space-y-3">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Registrations</h5>
+                </div>
+                <div class="card-body">
+                    @if($recentUsers->isEmpty())
+                        <p class="text-muted text-center py-3 mb-0">No registrations yet.</p>
+                    @else
                         @foreach($recentUsers as $user)
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-sec/20 flex items-center justify-center text-xs font-bold text-sec">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width:32px;height:32px;background:var(--secondary);color:var(--primary);font-weight:bold;font-size:0.8rem;">
                                         {{ strtoupper(substr($user->guest_name, 0, 1)) }}
                                     </div>
-                                    <span class="text-sm font-medium text-slate-800">{{ $user->guest_name }}</span>
+                                    <span class="fw-medium">{{ $user->guest_name }}</span>
                                 </div>
-                                <span class="text-xs text-body/60">{{ \Carbon\Carbon::parse($user->created_at)->diffForHumans() }}</span>
+                                <span class="text-muted small">{{ \Carbon\Carbon::parse($user->created_at)->diffForHumans() }}</span>
                             </div>
                         @endforeach
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 
     {{-- Contest Summary --}}
-    <div class="rounded-2xl glass-panel overflow-hidden">
-        <div class="border-b border-sec/20 px-5 py-3 flex items-center justify-between">
-            <h2 class="font-semibold text-slate-800">Contests</h2>
-            <a href="{{ route('admin.contests') }}" class="text-xs text-sec hover:underline">Manage Contests</a>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Contests</h5>
+            <a href="{{ route('admin.contests') }}" class="small" style="color: var(--primary);">Manage Contests</a>
         </div>
         @if($contests->isEmpty())
-            <div class="p-8 text-center text-body/60">No contests yet. <a href="{{ route('admin.contests') }}" class="text-sec hover:underline">Create one</a>.</div>
+            <div class="card-body text-center text-muted py-4">
+                No contests yet. <a href="{{ route('admin.contests') }}" style="color: var(--primary);">Create one</a>.
+            </div>
         @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b bg-slate-50 text-left text-body/80">
-                            <th class="px-4 py-3 font-medium">Title</th>
-                            <th class="px-4 py-3 font-medium">Status</th>
-                            <th class="px-4 py-3 font-medium">Entries</th>
-                            <th class="px-4 py-3 font-medium">Actions</th>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Entries</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody>
                         @foreach($contests as $contest)
-                            <tr class="hover:bg-slate-50">
-                                <td class="px-4 py-3 font-medium text-slate-800">{{ $contest->title }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                                        @if($contest->status === 'active') bg-green-100 text-green-700
-                                        @elseif($contest->status === 'closed') bg-red-100 text-red-700
-                                        @elseif($contest->status === 'draft') bg-slate-100 text-body/80
-                                        @else bg-yellow-100 text-yellow-700 @endif">
-                                        {{ ucfirst($contest->status) }}
-                                    </span>
+                            <tr>
+                                <td class="fw-medium">{{ $contest->title }}</td>
+                                <td>
+                                    @php
+                                        $statusClass = match($contest->status) {
+                                            'active' => 'bg-success',
+                                            'closed' => 'bg-danger',
+                                            'draft' => 'bg-secondary',
+                                            default => 'bg-warning text-dark',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $statusClass }}">{{ ucfirst($contest->status) }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-body/80">{{ $contest->entry_count }}</td>
-                                <td class="px-4 py-3">
-                                    <a href="{{ route('contest.show', $contest->id) }}" class="text-xs text-sec hover:underline mr-2">View</a>
-                                    <a href="{{ route('admin.contests', ['edit' => $contest->id]) }}" class="text-xs text-indigo-600 hover:underline">Edit</a>
+                                <td>{{ $contest->entry_count }}</td>
+                                <td>
+                                    <a href="{{ route('contest.show', $contest->id) }}" class="small me-2" style="color: var(--primary);">View</a>
+                                    <a href="{{ route('admin.contests', ['edit' => $contest->id]) }}" class="small text-info">Edit</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -130,44 +162,70 @@
     </div>
 
     {{-- Quick Links --}}
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <a href="{{ route('admin.users') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-users text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Users</h3>
-            <p class="text-xs text-body/60 mt-1">Manage guest accounts</p>
-        </a>
-        <a href="{{ route('admin.photos') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-images text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Photos</h3>
-            <p class="text-xs text-body/60 mt-1">Manage uploaded photos</p>
-        </a>
-        <a href="{{ route('admin.comments') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-comments text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Comments</h3>
-            <p class="text-xs text-body/60 mt-1">Moderate guest comments</p>
-        </a>
-        <a href="{{ route('admin.themes') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-palette text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Themes</h3>
-            <p class="text-xs text-body/60 mt-1">Customize colors and presets</p>
-        </a>
-        <a href="{{ route('admin.contests') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-trophy text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Contests</h3>
-            <p class="text-xs text-body/60 mt-1">Manage photo contests</p>
-        </a>
+    <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.users') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-users fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Users</h6>
+                    <p class="text-muted small mb-0">Manage guest accounts</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.photos') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-images fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Photos</h6>
+                    <p class="text-muted small mb-0">Manage uploaded photos</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.comments') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-comments fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Comments</h6>
+                    <p class="text-muted small mb-0">Moderate guest comments</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.themes') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-palette fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Themes</h6>
+                    <p class="text-muted small mb-0">Customize colors and presets</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.contests') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-trophy fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Contests</h6>
+                    <p class="text-muted small mb-0">Manage photo contests</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.phonebook') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-address-book fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Phonebook</h6>
+                    <p class="text-muted small mb-0">Manage contact entries</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ route('admin.settings') }}" class="card text-center h-100 text-decoration-none">
+                <div class="card-body">
+                    <i class="fas fa-cog fa-2x mb-2" style="color: var(--primary);"></i>
+                    <h6 class="mb-1">Settings</h6>
+                    <p class="text-muted small mb-0">Site title, hero, contact</p>
+                </div>
+            </a>
+        </div>
     </div>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <a href="{{ route('admin.phonebook') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-address-book text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Phonebook</h3>
-            <p class="text-xs text-body/60 mt-1">Manage contact entries</p>
-        </a>
-        <a href="{{ route('admin.settings') }}" class="rounded-2xl glass-panel p-5 hover:shadow-md transition-shadow">
-            <i class="fas fa-cog text-2xl text-sec mb-2"></i>
-            <h3 class="font-semibold text-slate-800">Settings</h3>
-            <p class="text-xs text-body/60 mt-1">Site title, hero, contact</p>
-        </a>
-    </div>
-</section>
+</div>
 @endsection

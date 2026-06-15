@@ -1,6 +1,6 @@
 # Laravel Rebuild — Migration Status & Task Board
 
-## Last Updated: 2026-06-15 (cron job #2)
+## Last Updated: 2026-06-15 (cron job #3)
 
 ## Architecture
 - **Stack:** Laravel 11, Breeze auth, Tailwind CSS (unused), Legacy CSS (active), MariaDB
@@ -13,6 +13,7 @@
 - Warm Filipino palette: browns (#8b7355), cream (#faf8f5), gold (#c9a86c)
 - Mobile-first, single system type stack
 - **Removed** dark/mystical theme (glass-panel, floating-blob classes) that clashed with wedding aesthetic
+- Added Tailwind compatibility CSS aliases in `style.css` for remaining Tailwind class references
 
 ## Page Migration Status
 
@@ -59,6 +60,27 @@
 | `api/like.php` | `POST /api/photo/{id}/like` | ✅ |
 | Profile tabs | `GET /profile/{favorites,uploads,votes,comments}` | ✅ |
 
+## Eloquent Models Created (2026-06-15 cron #3)
+
+| Model | Table | Relationships |
+|-------|-------|---------------|
+| `User` | `users` | photos, votes, favorites, ratings, comments, addressBook |
+| `Photo` | `photos` | uploader, votes, favorites, ratings, comments, contestEntries |
+| `Vote` | `votes` | photo, user |
+| `Favorite` | `favorites` | photo, user |
+| `Rating` | `ratings` | photo, user |
+| `Comment` | `comments` | photo, user |
+| `Contest` | `contests` | entries, approvedEntries (scope: isActive) |
+| `ContestEntry` | `contest_entries` | contest, photo, submitter |
+| `ContestVote` | `contest_votes` | entry, user |
+| `AddressBook` | `address_book` | user (accessor: fullName) |
+| `SitePage` | `site_pages` | — (static helpers: getContent/setContent) |
+| `LookupOption` | `lookup_options` | — (static helpers: getConnections/getCoreGroups/getRelationships) |
+| `ThemeSetting` | `theme_settings` | — (static helpers: getCurrent/getColors) |
+| `Setting` | `settings` | — (static helpers: getValue/setValue) |
+
+**Note:** Models are created but not yet wired into controllers. Controllers still use `DB::table()` queries. This is a code quality improvement that can be done incrementally.
+
 ## Mail Settings (Pending Migration)
 
 Legacy `inc/mail.php` reads from `.env`:
@@ -94,39 +116,37 @@ Legacy `inc/mail.php` reads from `.env`:
 - `lookup_options` — dropdown options
 - `settings` — site-wide settings (new in Laravel)
 
-## Changes Made in This Session (2026-06-15 cron #2)
+## Changes Made in This Session (2026-06-15 cron #3)
 
-### Auth pages restyled (login, register, reset-password)
-Replaced Breeze/Tailwind component markup (`glass-panel`, `x-input-label`, `x-text-input`, `x-primary-button`) with Bootstrap 5 + legacy CSS classes (`form-control`, `form-select`, `btn btn-primary`, `auth-card`). Pages now match the wedding design system without Tailwind dependency.
+### 1. Eloquent Models Created (14 models)
+Created proper Eloquent models for all database tables: Photo, Vote, Favorite, Rating, Comment, Contest, ContestEntry, ContestVote, AddressBook, SitePage, LookupOption, ThemeSetting, Setting, plus updated User. Models include relationships, accessors, scopes, and helper methods. Controllers still use `DB::table()` — models available for incremental migration.
 
-### Route name fix (critical — caused 500 errors on all authenticated pages)
-Routes inside the `name('admin.')->group()` had double-prefixed names (`admin.admin.users`, `admin.admin.photos`, `admin.admin.comments`). The navigation uses `route('admin.users')` which threw `RouteNotFoundException`. Fixed by removing the redundant `admin.` prefix from individual route names inside the group.
+### 2. Admin Dashboard — Tailwind → Bootstrap 5
+Rewrote `admin/dashboard.blade.php` from Tailwind classes to Bootstrap 5 + legacy CSS (card grid, stats row, table, quick links).
 
-### Upload page restyled
-Replaced Tailwind classes with Bootstrap 5 + legacy CSS. File input now uses `d-none` (Bootstrap) instead of `hidden` (Tailwind) so Playwright can find it. Dropzone uses standard CSS classes. Eliminated 500 error on upload page caused by the route name bug.
+### 3. Admin Contests — Tailwind → Bootstrap 5
+Rewrote `admin/contests.blade.php` from Tailwind to Bootstrap 5 (table, form, status badges, action buttons).
 
-### Themes admin page restyled
-Replaced Tailwind classes with Bootstrap 5 card grid. Preset names ("Fortune Gold", "Blush Romance") now render correctly without Tailwind CSS. Preview functionality updated to also set `--primary` etc. alongside `--color-*` variables.
+### 4. Admin Phonebook — Tailwind → Bootstrap 5
+Rewrote `admin/phonebook.blade.php` from Tailwind to Bootstrap 5 (table, form, contact CRUD).
 
-### Navigation: public nav links for guests
-Gallery, Contests, Phonebook links now shown to all visitors (not just authenticated users). Upload link still requires auth. Mobile nav also updated with Login/Create Account links for guests.
+### 5. Upload JS — Tailwind → Bootstrap classes
+Fixed `public/js/upload.js` preview grid to use Bootstrap classes + inline styles instead of Tailwind (`bg-slate-100`, `rounded-xl`, `aspect-square`, etc.).
 
-### Theme colors: DB-backed + `--color-*` aliases
-- Added `AppServiceProvider` view composer that reads `theme_settings` table via `ThemeService::getCurrentColors()` and injects `$themeColors` into all views
-- App layout now uses DB-driven colors for `--primary`, `--secondary`, etc.
-- Added `--color-primary`, `--color-secondary`, `--color-accent`, `--color-background`, `--color-text` CSS variable aliases for theme system compatibility
+### 6. CSS — Tailwind compatibility aliases
+Added ~150 lines of Tailwind-to-legacy-CSS compatibility aliases in `style.css` (`glass-panel`, `bg-slate-*`, `rounded-xl`, `rounded-2xl`, `aspect-square`, `bg-green-100`, `text-green-700`, etc.). This ensures remaining partial Tailwind references in views render correctly.
 
-### E2E test results: 40 passed, 1 failed (was 30 passed, 7 failed)
-All previously failing tests now pass. Remaining failure: "photo detail page has comment form" — 30s timeout, likely a test timing issue (button text mismatch: test looks for `button[type="submit"]:has-text("Comment")` but button says "Post Comment").
+### 7. E2E tests: 41/41 passed
+All 41 tests pass after all template/JS/CSS changes.
 
 ## Pending Items
 
 1. **Mail config** — SMTP credentials from old `.env` (Mailable class created, needs credentials)
-2. **E2E: comment form test** — Fix button text or test selector (minor)
+2. **Models → Controllers** — Wire Eloquent models into controllers (incremental, low priority since DB::table works)
 3. **Smoke tests** — `test.sh` 16 tests from legacy (not yet ported)
 4. **rclone + Telegram** — Configured in old site — Laravel .env needs these values
 5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up.
-6. **Wedding profile** — `WeddingProfileController` + `wedding/profile.blade.php` verified working (E2E test passes)
+6. **Contest vote API test** — Add E2E test for contest voting flow
 
 ## Resumable Work
 
