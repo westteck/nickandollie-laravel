@@ -515,7 +515,7 @@ test('photo detail page has comment form', async ({ page }) => {
   // If comment form exists, try to submit
   if (await commentInput.count() > 0) {
     await commentInput.first().fill('E2E test comment');
-    await page.locator('button[type="submit"]:has-text("Comment")').click();
+    await page.locator('#btn-comment, button:has-text("Post Comment"), button:has-text("Comment")').first().click();
     await page.waitForTimeout(1000);
   }
   await logout(page);
