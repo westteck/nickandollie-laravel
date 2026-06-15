@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\ThemeService;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Inject theme colors into all views
+        View::composer('*', function ($view) {
+            $colors = ThemeService::getCurrentColors();
+            $view->with('themeColors', $colors);
+        });
     }
 }

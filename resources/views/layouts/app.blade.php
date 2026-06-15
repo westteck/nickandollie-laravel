@@ -16,17 +16,22 @@
         <!-- Theme CSS variables from DB -->
         <style>
             :root {
-                --primary: #8b7355;
+                --primary: {{ $themeColors['primary'] }};
                 --primary-dark: #6b5744;
-                --secondary: #d4c4b0;
-                --accent: #c9a86c;
-                --bg: #faf8f5;
-                --text: #3d3530;
+                --secondary: {{ $themeColors['secondary'] }};
+                --accent: {{ $themeColors['accent'] }};
+                --bg: {{ $themeColors['background'] }};
+                --text: {{ $themeColors['text'] }};
                 --text-light: #7a726a;
                 --white: #ffffff;
                 --error: #c45c5c;
                 --success: #5c9c6b;
                 --gold: #e8b923;
+                --color-primary: {{ $themeColors['primary'] }};
+                --color-secondary: {{ $themeColors['secondary'] }};
+                --color-accent: {{ $themeColors['accent'] }};
+                --color-background: {{ $themeColors['background'] }};
+                --color-text: {{ $themeColors['text'] }};
             }
         </style>
 

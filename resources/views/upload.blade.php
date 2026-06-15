@@ -3,134 +3,148 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<style>
+.upload-area {
+    border: 3px dashed var(--secondary);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(212, 196, 176, 0.1);
+    margin-bottom: 1.5rem;
+}
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: var(--primary);
+    background: rgba(139, 115, 85, 0.05);
+}
+.upload-area i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    display: block;
+}
+.upload-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+.upload-preview-item {
+    position: relative;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+.upload-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+</style>
 @endpush
 
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex flex-col gap-2">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Add photos</p>
-        <h1 class="font-display text-3xl font-bold text-accent sm:text-4xl">Upload Photos</h1>
-        <p class="max-w-2xl text-body">Select up to 20 photos (jpg, png, webp). Each photo is saved as original + thumb (400px) + print (2000px) in WebP format.</p>
-    </div>
+<div class="container py-4">
+    <h1 class="mb-1" style="color: var(--primary)">
+        <i class="fas fa-cloud-upload-alt me-2"></i>Upload Photos
+    </h1>
+    <p class="text-muted mb-4" style="font-size: 0.85rem;">Select up to 20 photos (jpg, png, webp). Each photo is saved as original + thumb (400px) + print (2000px) in WebP format.</p>
 
     @if(session('status'))
-        <div class="rounded-xl bg-sec/20 p-4 text-accent border border-sec/30">{{ session('status') }}</div>
+        <div class="alert alert-success mb-3">{{ session('status') }}</div>
     @endif
 
-    <!-- Upload Form -->
-    <form method="POST" action="{{ route('upload.store') }}" enctype="multipart/form-data"
-          id="upload-form"
-          class="rounded-2xl glass-panel p-6  space-y-6">
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ route('upload.store') }}" enctype="multipart/form-data" id="upload-form">
+                @csrf
 
-        @csrf
+                {{-- Hidden file input --}}
+                <input type="file" name="photos[]" id="photo-input" multiple
+                       accept="image/jpeg,image/png,image/webp" class="d-none">
 
-        <!-- Hidden file input -->
-        <input type="file" name="photos[]" id="photo-input" multiple
-               accept="image/jpeg,image/png,image/webp" class="hidden">
+                {{-- Dropzone tap area --}}
+                <div id="dropzone" class="upload-area" role="button" tabindex="0" aria-label="Tap to select photos">
+                    <i class="fas fa-images"></i>
+                    <p class="mb-1 fw-medium" style="font-size: 1.1rem; color: var(--text);">Tap to select photos</p>
+                    <p class="text-muted mb-0" style="font-size: 0.85rem;">JPG, PNG, or WebP — up to 20 photos</p>
+                </div>
 
-        <!-- Dropzone tap area -->
-        <div id="dropzone"
-             class="dropzone flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#171d33] bg-night/20 p-8 sm:p-12 cursor-pointer transition-colors hover:border-[#171d33] hover:bg-primary/20 active:bg-primary/30"
-             role="button"
-             tabindex="0"
-             aria-label="Tap to select photos">
+                @error('photos')
+                    <p class="form-error">{{ $message }}</p>
+                @enderror
 
-            <svg class="mb-4 h-12 w-12 text-sec" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <p class="text-center text-lg font-medium text-sec">Tap to select photos</p>
-            <p class="mt-1 text-sm text-body/70">JPG, PNG, or WebP — up to 20 photos</p>
-        </div>
+                {{-- Thumbnail preview grid --}}
+                <div id="preview-grid" class="upload-preview d-none"></div>
 
-        @error('photos')
-            <p class="text-sm text-red-400">{{ $message }}</p>
-        @enderror
+                {{-- Caption input --}}
+                <div class="mb-3">
+                    <label for="caption" class="form-label">Caption</label>
+                    <p class="text-muted mb-2" style="font-size: 0.8rem;">Applied to all selected photos</p>
+                    <input type="text" name="caption" id="caption" maxlength="255"
+                           placeholder="Optional caption for all photos..."
+                           class="form-control">
+                </div>
 
-        <!-- Thumbnail preview grid -->
-        <div id="preview-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 hidden">
-            <!-- Thumbnails injected by JS -->
-        </div>
+                {{-- Upload button --}}
+                <button type="submit" id="upload-btn" class="btn btn-primary" disabled>
+                    <i class="fas fa-upload me-2"></i>Upload Photos
+                </button>
 
-        <!-- Caption input -->
-        <div>
-            <label for="caption" class="block text-sm font-medium text-body mb-1">Caption</label>
-            <p class="text-xs text-body/60 mb-2">Applied to all selected photos</p>
-            <input type="text" name="caption" id="caption" maxlength="255"
-                   placeholder="Optional caption for all photos..."
-                   class="w-full rounded-lg border border-sec/30 px-4 py-3 text-sm focus:border-[#171d33] focus:outline-none focus:ring-2 focus:ring-[#171d33]/20">
-        </div>
-
-        <!-- Upload button -->
-        <button type="submit" id="upload-btn" disabled
-                class="w-full sm:w-auto rounded-full bg-primary px-8 py-3 text-sm font-medium text-white hover:bg-primary disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-h-[44px]">
-            Upload Photos
-        </button>
-
-        <!-- Overall progress bar -->
-        <div id="progress-container" class="hidden space-y-2">
-            <div class="flex justify-between text-sm text-body/80">
-                <span id="progress-label">Uploading...</span>
-                <span id="progress-percent">0%</span>
-            </div>
-            <div class="h-2.5 w-full rounded-full bg-slate-200 overflow-hidden">
-                <div id="progress-bar" class="h-full bg-primary rounded-full transition-all duration-200" style="width: 0%"></div>
-            </div>
-        </div>
-    </form>
-</section>
-
-<!-- Cropper Modal -->
-<div id="cropper-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="cropper-modal-title">
-    <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h2 id="cropper-modal-title" class="text-lg font-semibold text-slate-800">Crop Photo</h2>
-            <span id="cropper-photo-label" class="text-sm text-body/60"></span>
-        </div>
-        <div class="flex-1 overflow-hidden p-4">
-            <img id="cropper-image" src="" alt="Crop preview" class="max-h-[50vh] w-full object-contain">
-        </div>
-        <div class="flex gap-3 border-t border-slate-100 px-5 py-4">
-            <button type="button" id="cropper-skip-btn"
-                    class="flex-1 rounded-full border border-sec/30 px-4 py-2.5 text-sm font-medium text-body/80 hover:bg-slate-50 transition-colors min-h-[44px]">
-                Skip
-            </button>
-            <button type="button" id="cropper-crop-btn"
-                    class="flex-1 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary transition-colors min-h-[44px]">
-                Crop & Continue
-            </button>
+                {{-- Progress bar --}}
+                <div id="progress-container" class="d-none mt-3">
+                    <div class="d-flex justify-content-between text-muted mb-1" style="font-size: 0.85rem;">
+                        <span id="progress-label">Uploading...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Success Overlay -->
-<div id="success-overlay" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-night/20/95 backdrop-blur-sm p-6" role="dialog" aria-modal="true">
-    <div class="text-center space-y-6 max-w-sm">
-        <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-            <svg class="h-10 w-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+{{-- Cropper Modal --}}
+<div id="cropper-modal" class="d-none" style="position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:1rem;" role="dialog" aria-modal="true" aria-labelledby="cropper-modal-title">
+    <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden">
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+            <h2 id="cropper-modal-title" class="h5 mb-0">Crop Photo</h2>
+            <span id="cropper-photo-label" class="text-muted" style="font-size:0.85rem;"></span>
         </div>
-        <div>
-            <h2 class="text-2xl font-bold text-slate-800">Upload Complete!</h2>
-            <p id="success-count" class="mt-2 text-body/80"></p>
+        <div class="p-3 text-center">
+            <img id="cropper-image" src="" alt="Crop preview" style="max-height:50vh;max-width:100%;">
         </div>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="{{ route('gallery') }}"
-               class="rounded-full bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-primary transition-colors min-h-[44px] flex items-center justify-center">
-                View Gallery
-            </a>
-            <button type="button" id="upload-more-btn"
-                    class="rounded-full border border-sec/30 px-6 py-3 text-sm font-medium text-body/80 hover:bg-slate-50 transition-colors min-h-[44px]">
-                Upload More
-            </button>
+        <div class="d-flex gap-2 p-3 border-top">
+            <button type="button" id="cropper-skip-btn" class="btn btn-outline-secondary flex-grow-1">Skip</button>
+            <button type="button" id="cropper-crop-btn" class="btn btn-primary flex-grow-1">Crop & Continue</button>
         </div>
     </div>
 </div>
 
-<!-- Error Toast -->
-<div id="error-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden rounded-xl bg-red-50 border border-red-200 px-5 py-3 text-red-700 shadow-lg text-sm max-w-sm text-center">
-    <span id="error-message"></span>
+{{-- Success Overlay --}}
+<div id="success-overlay" class="d-none" style="position:fixed;inset:0;z-index:1050;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;padding:1rem;">
+    <div class="text-center text-white">
+        <div class="mb-3">
+            <i class="fas fa-check-circle" style="font-size:4rem;color:var(--success);"></i>
+        </div>
+        <h2 class="h4 mb-2">Upload Complete!</h2>
+        <p id="success-count" class="text-muted mb-3"></p>
+        <div class="d-flex gap-2 justify-content-center">
+            <a href="{{ route('gallery') }}" class="btn btn-primary">View Gallery</a>
+            <button type="button" id="upload-more-btn" class="btn btn-outline-light">Upload More</button>
+        </div>
+    </div>
+</div>
+
+{{-- Error Toast --}}
+<div id="error-toast" class="d-none" style="position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:1060;">
+    <div class="alert alert-danger mb-0">
+        <span id="error-message"></span>
+    </div>
 </div>
 @endsection
 

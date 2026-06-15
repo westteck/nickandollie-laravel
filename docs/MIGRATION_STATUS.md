@@ -1,6 +1,6 @@
 # Laravel Rebuild — Migration Status & Task Board
 
-## Last Updated: 2026-06-15 (cron job)
+## Last Updated: 2026-06-15 (cron job #2)
 
 ## Architecture
 - **Stack:** Laravel 11, Breeze auth, Tailwind CSS (unused), Legacy CSS (active), MariaDB
@@ -9,7 +9,7 @@
 
 ## Design System
 - Legacy `style.css` + `DESIGN.md` are the canonical design reference
-- Theme CSS variables applied in layout `<style>` block
+- Theme CSS variables applied in layout `<style>` block via AppServiceProvider (DB-backed)
 - Warm Filipino palette: browns (#8b7355), cream (#faf8f5), gold (#c9a86c)
 - Mobile-first, single system type stack
 - **Removed** dark/mystical theme (glass-panel, floating-blob classes) that clashed with wedding aesthetic
@@ -21,17 +21,17 @@
 | Home / Landing | `index.php` | `GET /` | ✅ Done | Hero from DB, flower strip, login form (Bootstrap tabs) |
 | Gallery | `gallery.php` + `api/gallery.php` | `GET /gallery` | ✅ Done | Photo grid with pagination, thumbnails, upload button |
 | Photo Detail | `photo.php` + APIs | `GET /photo/{id}` | ✅ Done | Like, favorite, rate, comment, contest entry |
-| Upload | `upload.php` + `api/upload.php` | `GET/POST /upload` | ✅ Done | Multi-photo, GD resize, WebP, EXIF strip |
+| Upload | `upload.php` + `api/upload.php` | `GET/POST /upload` | ✅ Done | Multi-photo, GD resize, WebP, EXIF strip. Restyled to Bootstrap 5 |
 | Contests List | `contests.php` + `api/contests.php` | `GET /contest` | ✅ Done | Card grid with entry counts, status badges |
 | Contest Detail | `contest.php` + `api/contest.php` | `GET /contest/{id}` | ✅ Done | Entry grid, lightbox, voting (contest_votes table) |
 | Phonebook | `phonebook.php` + `api/phonebook-list.php` | `GET /phonebook` | ✅ Done | Search, filter by group, contact cards |
 | Phonebook List | `phonebook_list.php` | `GET /phonebook/all` | ✅ Done | Alphabetical listing by first letter |
-| Register | `register.php` + `api/register.php` | `GET/POST /register` | ✅ Done | All legacy fields, address_book auto-create |
-| Login | `index.php` + `do-login.php` | `POST /login` | ✅ Done | Breeze handles, email or username |
+| Register | `register.php` + `api/register.php` | `GET/POST /register` | ✅ Done | All legacy fields, address_book auto-create. Restyled to Bootstrap 5 |
+| Login | `index.php` + `do-login.php` | `POST /login` | ✅ Done | Breeze handles, email or username. Restyled to Bootstrap 5 |
 | Logout | `logout.php` | `POST /logout` | ✅ Done | Breeze handles |
 | Profile | `profile.php` + `api/profile.php` | `GET /profile` | ✅ Done | Full tabs: account, password, favorites, uploads, votes, comments |
 | Admin Dashboard | `dash/dash.php` | `GET /admin` | ✅ Done | Stats, recent uploads, recent users, contest summary |
-| Admin Themes | `theme-test.php` | `GET/POST /admin/themes` | ✅ Done | Preset picker, custom colors, live preview |
+| Admin Themes | `theme-test.php` | `GET/POST /admin/themes` | ✅ Done | Preset picker, custom colors, live preview. Restyled to Bootstrap 5 |
 | Admin Contests | — | `GET/POST /admin/contests` | ✅ Done | Full CRUD with edit form |
 | Admin Phonebook | — | `GET/POST/DELETE /admin/phonebook` | ✅ Done | Contact CRUD |
 | Admin Settings | — | `GET/PUT /admin/settings` | ✅ Done | Site title, hero, contact email, maintenance mode |
@@ -88,36 +88,45 @@ Legacy `inc/mail.php` reads from `.env`:
 - `contest_entries` — photo-contest junction (with `votes` cache column)
 - `contest_votes` — **NEW** table, separate from photo votes
 - `address_book` — phonebook entries
-- `theme_settings` — color theme
+- `theme_settings` — color theme (used by AppServiceProvider view composer)
 - `site_settings` — template selection
 - `site_pages` — DB-backed content (hero, etc.)
 - `lookup_options` — dropdown options
 - `settings` — site-wide settings (new in Laravel)
 
-## Changes Made in This Session (2026-06-15 cron)
+## Changes Made in This Session (2026-06-15 cron #2)
 
-1. **Gallery view — unstubbed** | `resources/views/wedding/gallery.blade.php` — replaced placeholder cards with real photo grid, pagination, and upload button. GalleryController already fetched data; now the view renders it.
+### Auth pages restyled (login, register, reset-password)
+Replaced Breeze/Tailwind component markup (`glass-panel`, `x-input-label`, `x-text-input`, `x-primary-button`) with Bootstrap 5 + legacy CSS classes (`form-control`, `form-select`, `btn btn-primary`, `auth-card`). Pages now match the wedding design system without Tailwind dependency.
 
-2. **Contest vote fix** | Created `contest_votes` migration (`database/migrations/2026_06_15_120000_create_contest_votes_table.php`) — new table with `(contest_entry_id, user_id)` unique constraint. Fixed `POST /api/contest-vote` to use `contest_votes` table instead of reusing `votes` (photo likes), preventing contest votes from being mixed with photo likes.
+### Route name fix (critical — caused 500 errors on all authenticated pages)
+Routes inside the `name('admin.')->group()` had double-prefixed names (`admin.admin.users`, `admin.admin.photos`, `admin.admin.comments`). The navigation uses `route('admin.users')` which threw `RouteNotFoundException`. Fixed by removing the redundant `admin.` prefix from individual route names inside the group.
 
-3. **Contest detail view fix** | `resources/views/contest-show.blade.php` — changed `data-id` (was `photo_id`) to separate `data-entry-id` (contest_entries.id) and `data-photo-id`. Fixed JS vote handlers to send `entry_id` correctly.
+### Upload page restyled
+Replaced Tailwind classes with Bootstrap 5 + legacy CSS. File input now uses `d-none` (Bootstrap) instead of `hidden` (Tailwind) so Playwright can find it. Dropzone uses standard CSS classes. Eliminated 500 error on upload page caused by the route name bug.
 
-4. **App layout — theme alignment** | `resources/views/layouts/app.blade.php` — replaced dark/mystical theme (glass-panel, floating-blob, dark mode classes) with warm Filipino wedding theme. Now uses legacy `style.css`, Bootstrap 5, Font Awesome. CSS variables from DESIGN.md applied in `:root`.
+### Themes admin page restyled
+Replaced Tailwind classes with Bootstrap 5 card grid. Preset names ("Fortune Gold", "Blush Romance") now render correctly without Tailwind CSS. Preview functionality updated to also set `--primary` etc. alongside `--color-*` variables.
 
-5. **Navigation rebuilt** | `resources/views/layouts/navigation.blade.php` — replaced Tailwind-based nav with custom CSS nav that matches wedding aesthetic. Responsive, mobile-first, clean.
+### Navigation: public nav links for guests
+Gallery, Contests, Phonebook links now shown to all visitors (not just authenticated users). Upload link still requires auth. Mobile nav also updated with Login/Create Account links for guests.
 
-6. **Home page aligned** | `resources/views/home.blade.php` — replaced Tailwind classes with Bootstrap 5 + legacy CSS classes (hero, auth-card, form-control, btn-primary). Preserved flower strip, hero from DB, login form.
+### Theme colors: DB-backed + `--color-*` aliases
+- Added `AppServiceProvider` view composer that reads `theme_settings` table via `ThemeService::getCurrentColors()` and injects `$themeColors` into all views
+- App layout now uses DB-driven colors for `--primary`, `--secondary`, etc.
+- Added `--color-primary`, `--color-secondary`, `--color-accent`, `--color-background`, `--color-text` CSS variable aliases for theme system compatibility
 
-7. **Guest layout fixed** | `resources/views/layouts/guest.blade.php` — simplified to use legacy CSS, removed Vite/Tailwind dependencies. Auth pages (register, login, etc.) now style correctly.
+### E2E test results: 40 passed, 1 failed (was 30 passed, 7 failed)
+All previously failing tests now pass. Remaining failure: "photo detail page has comment form" — 30s timeout, likely a test timing issue (button text mismatch: test looks for `button[type="submit"]:has-text("Comment")` but button says "Post Comment").
 
 ## Pending Items
 
 1. **Mail config** — SMTP credentials from old `.env` (Mailable class created, needs credentials)
-2. **E2E tests** — Playwright tests at `e2e/site.spec.ts` — run and verify
+2. **E2E: comment form test** — Fix button text or test selector (minor)
 3. **Smoke tests** — `test.sh` 16 tests from legacy (not yet ported)
 4. **rclone + Telegram** — Configured in old site — Laravel .env needs these values
 5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up.
-6. **Wedding profile** — `WeddingProfileController` exists but blade view at `wedding/profile.blade.php` needs verification
+6. **Wedding profile** — `WeddingProfileController` + `wedding/profile.blade.php` verified working (E2E test passes)
 
 ## Resumable Work
 

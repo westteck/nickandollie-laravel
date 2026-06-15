@@ -6,18 +6,18 @@
             <span class="nav-brand-text">{{ Auth::check() ? 'Nick & Ollie' : 'Welcome' }}</span>
         </a>
 
-        <!-- Desktop links (only when logged in) -->
-        @auth
+        <!-- Desktop links -->
         <div class="nav-links">
             <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">Gallery</a>
-            <a class="nav-link {{ request()->routeIs('upload') ? 'active' : '' }}" href="{{ route('upload') }}">Upload</a>
             <a class="nav-link {{ request()->routeIs('contest') ? 'active' : '' }}" href="{{ route('contest') }}">Contests</a>
             <a class="nav-link {{ request()->routeIs('phonebook') ? 'active' : '' }}" href="{{ route('phonebook') }}">Phonebook</a>
+            @auth
+            <a class="nav-link {{ request()->routeIs('upload') ? 'active' : '' }}" href="{{ route('upload') }}">Upload</a>
             @if(auth()->user()->is_admin)
                 <a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Admin</a>
             @endif
+            @endauth
         </div>
-        @endauth
 
         <!-- Right side -->
         <div class="nav-actions">
@@ -61,12 +61,12 @@
         </div>
 
         <!-- Mobile dropdown -->
-        @auth
         <div class="nav-mobile" x-show="mobileOpen" x-transition>
             <a href="{{ route('gallery') }}">Gallery</a>
-            <a href="{{ route('upload') }}">Upload</a>
             <a href="{{ route('contest') }}">Contests</a>
             <a href="{{ route('phonebook') }}">Phonebook</a>
+            @auth
+            <a href="{{ route('upload') }}">Upload</a>
             <a href="{{ route('profile.edit') }}">Profile</a>
             @if(auth()->user()->is_admin)
                 <a href="{{ route('admin.dashboard') }}">Admin</a>
@@ -75,8 +75,11 @@
                 @csrf
                 <button type="submit" class="nav-mobile-link">Log Out</button>
             </form>
+            @else
+            <a href="{{ route('login') }}">Login</a>
+            <a href="{{ route('register') }}">Create Account</a>
+            @endauth
         </div>
-        @endauth
 
     </nav>
 </header>
