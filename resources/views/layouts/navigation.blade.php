@@ -1,5 +1,5 @@
 <header class="site-nav">
-    <nav class="nav-container" x-data="{ mobileOpen: false }">
+    <nav class="nav-container">
 
         <!-- Logo / Brand -->
         <a href="{{ Auth::check() ? route('gallery') : route('home') }}" class="nav-brand" aria-label="Nick & Ollie home">
@@ -23,12 +23,12 @@
         <div class="nav-actions">
             @auth
                 <!-- User dropdown -->
-                <div class="nav-user" x-data="{ open: false }">
-                    <button @click="open = !open" class="nav-user-toggle">
+                <div class="nav-user" id="userDropdown">
+                    <button class="nav-user-toggle" onclick="toggleUserDropdown()" aria-expanded="false" aria-haspopup="true">
                         {{ Auth::user()->guest_name ?? Auth::user()->name }}
                         <i class="fas fa-chevron-down ms-1"></i>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="nav-dropdown">
+                    <div class="nav-dropdown" id="userDropdownMenu" style="display: none;">
                         <a href="{{ route('profile.edit') }}">Profile</a>
                         <a href="{{ route('wedding.profile', auth()->id()) }}">My Public Profile</a>
                         @if(auth()->user()->is_admin)
@@ -54,14 +54,14 @@
 
             <!-- Mobile menu toggle -->
             @auth
-            <button type="button" class="nav-mobile-toggle" x-on:click="mobileOpen = !mobileOpen" aria-label="Toggle menu">
-                <i class="fas" :class="mobileOpen ? 'fa-times' : 'fa-bars'"></i>
+            <button type="button" class="nav-mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+                <i class="fas fa-bars" id="mobileMenuIcon"></i>
             </button>
             @endauth
         </div>
 
         <!-- Mobile dropdown -->
-        <div class="nav-mobile" x-show="mobileOpen" x-transition>
+        <div class="nav-mobile" id="mobileMenu" style="display: none;">
             <a href="{{ route('gallery') }}">Gallery</a>
             <a href="{{ route('contest') }}">Contests</a>
             <a href="{{ route('phonebook') }}">Phonebook</a>
@@ -83,6 +83,34 @@
 
     </nav>
 </header>
+
+<script>
+function toggleUserDropdown() {
+    var menu = document.getElementById('userDropdownMenu');
+    var btn = document.querySelector('.nav-user-toggle');
+    var isOpen = menu.style.display !== 'none';
+    menu.style.display = isOpen ? 'none' : 'block';
+    btn.setAttribute('aria-expanded', !isOpen);
+}
+
+function toggleMobileMenu() {
+    var menu = document.getElementById('mobileMenu');
+    var icon = document.getElementById('mobileMenuIcon');
+    var isOpen = menu.style.display !== 'none';
+    menu.style.display = isOpen ? 'none' : 'block';
+    icon.className = isOpen ? 'fas fa-bars' : 'fas fa-times';
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', function(e) {
+    var userDropdown = document.getElementById('userDropdown');
+    var userMenu = document.getElementById('userDropdownMenu');
+    if (userDropdown && !userDropdown.contains(e.target)) {
+        userMenu.style.display = 'none';
+        document.querySelector('.nav-user-toggle')?.setAttribute('aria-expanded', 'false');
+    }
+});
+</script>
 
 <style>
 .site-nav {

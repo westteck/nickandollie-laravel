@@ -1,103 +1,99 @@
 @extends('layouts.app')
 @section('title', 'Admin Settings')
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex flex-col gap-2">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Admin</p>
-        <h1 class="text-3xl font-bold sm:text-4xl">Settings</h1>
-        <p class="max-w-2xl text-body">Manage site identity, hero content, and contact information.</p>
+<div class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <p class="text-uppercase text-muted small mb-1" style="letter-spacing: 0.2em;">Admin</p>
+            <h1 class="mb-0" style="color: var(--primary);">Settings</h1>
+            <p class="text-muted mb-0">Manage site identity, hero content, and contact information.</p>
+        </div>
     </div>
 
     @if(session('status'))
-        <div class="rounded-md bg-sec/20 p-3 text-sm text-accent">{{ session('status') }}</div>
+        <div class="alert alert-success mb-3">{{ session('status') }}</div>
     @endif
 
     {{-- Site Info --}}
-    <div class="rounded-lg border bg-white shadow-sm">
-        <div class="border-b px-4 py-3">
-            <h2 class="font-semibold text-slate-800">Site Information</h2>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Site Information</h2>
         </div>
-        <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-4 p-6">
-            @csrf
-            @method('PUT')
+        <div class="card-body">
+            <form method="POST" action="{{ route('admin.settings.update') }}">
+                @csrf
+                @method('PUT')
 
-            <div class="grid gap-4 sm:grid-cols-2">
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Site Title</label>
-                    <input type="text" name="site_title"
-                           value="{{ old('site_title', $settings->site_title ?? 'Nick & Ollie Fortune') }}"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Site Title</label>
+                        <input type="text" name="site_title"
+                               value="{{ old('site_title', $settings->site_title ?? 'Nick & Ollie Fortune') }}"
+                               class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Site Tagline</label>
+                        <input type="text" name="site_tagline"
+                               value="{{ old('site_tagline', $settings->site_tagline ?? '') }}"
+                               placeholder="e.g. Our Wedding Journey"
+                               class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Contact Email</label>
+                        <input type="email" name="contact_email"
+                               value="{{ old('contact_email', $settings->contact_email ?? '') }}"
+                               class="form-control">
+                    </div>
                 </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Site Tagline</label>
-                    <input type="text" name="site_tagline"
-                           value="{{ old('site_tagline', $settings->site_tagline ?? '') }}"
-                           placeholder="e.g. Our Wedding Journey"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-body">Contact Email</label>
-                    <input type="email" name="contact_email"
-                           value="{{ old('contact_email', $settings->contact_email ?? '') }}"
-                           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
-                </div>
-            </div>
 
-            <hr class="border-sec/30">
+                <hr style="border-color: var(--secondary);">
 
-            <div>
-                <h3 class="mb-3 text-sm font-semibold text-body">Hero Section</h3>
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-body">Hero Title</label>
+                <h3 class="h6 mb-3">Hero Section</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Hero Title</label>
                         <input type="text" name="hero_title"
                                value="{{ old('hero_title', $settings->hero_title ?? '') }}"
                                placeholder="Welcome to our wedding site"
-                               class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
+                               class="form-control">
                     </div>
-                    <div>
-                        <label class="mb-1 block text-sm font-medium text-body">Hero Subtitle</label>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Hero Subtitle</label>
                         <input type="text" name="hero_subtitle"
                                value="{{ old('hero_subtitle', $settings->hero_subtitle ?? '') }}"
                                placeholder="Celebrating our love story"
-                               class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-[#171d33] focus:outline-none focus:ring-1 focus:ring-[#171d33]">
+                               class="form-control">
                     </div>
                 </div>
-            </div>
 
-            <hr class="border-sec/30">
+                <hr style="border-color: var(--secondary);">
 
-            <div>
-                <label class="inline-flex items-center gap-2">
-                    <input type="checkbox" name="maintenance_mode" value="1"
-                           {{ old('maintenance_mode', $settings->maintenance_mode ?? false) ? 'checked' : '' }}
-                           class="rounded border-slate-300 text-sec focus:ring-[#171d33]">
-                    <span class="text-sm font-medium text-body">Enable maintenance mode</span>
-                </label>
-                <p class="mt-1 text-xs text-body/70">When enabled, visitors will see a maintenance notice instead of the site.</p>
-            </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="maintenance_mode" value="1"
+                           id="maintenanceMode"
+                           {{ old('maintenance_mode', $settings->maintenance_mode ?? false) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="maintenanceMode">Enable maintenance mode</label>
+                    <p class="form-text mb-0">When enabled, visitors will see a maintenance notice instead of the site.</p>
+                </div>
 
-            <div class="flex items-center gap-3 pt-2">
-                <button type="submit"
-                        class="rounded-md bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary">
-                    Save Settings
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Save Settings
                 </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 
     {{-- Theme Settings Link --}}
-    <div class="rounded-lg border bg-white shadow-sm">
-        <div class="border-b px-4 py-3">
-            <h2 class="font-semibold text-slate-800">Appearance</h2>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Appearance</h2>
         </div>
-        <div class="p-6">
-            <p class="mb-4 text-sm text-body/80">Customize site colors and theme presets.</p>
-            <a href="{{ route('admin.themes') }}"
-               class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary">
-                <i class="fas fa-palette"></i> Theme Settings
+        <div class="card-body">
+            <p class="text-muted mb-3">Customize site colors and theme presets.</p>
+            <a href="{{ route('admin.themes') }}" class="btn btn-primary">
+                <i class="fas fa-palette me-2"></i>Theme Settings
             </a>
         </div>
     </div>
-</section>
+</div>
 @endsection

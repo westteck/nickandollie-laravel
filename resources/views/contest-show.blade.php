@@ -13,7 +13,7 @@
         @if($contest->description)
             <p class="text-muted mb-1 px-3">{{ $contest->description }}</p>
         @endif
-        <div class="d-flex justify-content-center gap-3 text-sm text-body/70">
+        <div class="d-flex justify-content-center gap-3 small text-muted">
             <span><i class="fas fa-images me-1"></i>{{ $entries->count() }} entries</span>
             @if($contest->prize)
                 <span><i class="fas fa-gift me-1"></i>Prize: {{ $contest->prize }}</span>
@@ -31,7 +31,7 @@
 
     @if($entries->isEmpty())
         <div class="text-center py-5">
-            <i class="fas fa-images text-4xl text-body/40 mb-4"></i>
+            <i class="fas fa-images fa-3x text-muted mb-3"></i>
             <h2 class="h5 text-muted">No entries yet</h2>
             <p class="text-muted mb-4">Be the first to enter!</p>
             <a href="{{ route('gallery') }}" class="btn btn-primary btn-sm">
@@ -69,9 +69,11 @@
     @endif
 
     @if($contest->rules)
-        <div class="bg-white rounded-3xl p-6 mt-4">
-            <h2 class="text-lg font-semibold mb-3" style="color: var(--primary)">Contest Rules</h2>
-            <div class="prose prose-sm text-body/80 max-w-none">
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2 class="h5 mb-0" style="color: var(--primary)">Contest Rules</h2>
+            </div>
+            <div class="card-body">
                 {!! nl2br(e($contest->rules)) !!}
             </div>
         </div>

@@ -1,6 +1,6 @@
 # Laravel Rebuild — Migration Status & Task Board
 
-## Last Updated: 2026-06-16 (cron job #4)
+## Last Updated: 2026-06-17 (cron job #5)
 
 ## Architecture
 - **Stack:** Laravel 11, Breeze auth, Tailwind CSS (unused), Legacy CSS (active), MariaDB
@@ -116,22 +116,31 @@ Legacy `inc/mail.php` reads from `.env`:
 - `lookup_options` — dropdown options
 - `settings` — site-wide settings (new in Laravel)
 
-## Changes Made in This Session (2026-06-16 cron #4)
+## Changes Made in This Session (2026-06-17 cron #5)
 
-### 1. Fixed Admin Contest Routes (routes/web.php)
-Admin contest CRUD routes were incorrectly pointing to the public `ContestController` instead of `Admin\ContestController`. Changed all 4 routes (index, store, update, destroy) to use `Admin\ContestController`. This was a functional bug — admin contest management would have served the public contest list view.
+### 1. Admin Settings View — Tailwind → Bootstrap 5
+Completely rewrote `resources/views/admin/settings.blade.php` from Tailwind classes (`text-sec`, `text-body`, `rounded-md`, `border-slate-300`, `focus:border-[#171d33]`, `focus:ring-[#171d33]`, `bg-sec/20`, `border-sec/30`, etc.) to Bootstrap 5 card/form layout matching the rest of the admin panel.
 
-### 2. Gallery View — Removed Tailwind Residue
-Rewrote `resources/views/gallery.blade.php` (unused stub) to Bootstrap 5. The active view `wedding/gallery.blade.php` was already clean.
+### 2. Admin Photos View — Removed Tailwind Container
+Replaced `mx-auto max-w-6xl px-4 py-6` with standard Bootstrap `container py-4` in `resources/views/admin/photos.blade.php`.
 
-### 3. Contest List View — Tailwind → Bootstrap 5
-Rewrote `resources/views/contest.blade.php` from Tailwind classes (`glass-panel`, `text-sec`, `text-body`, `rounded-2xl`, etc.) to Bootstrap 5 card grid with status badges, entry counts, and hover effects matching the legacy design.
+### 3. Admin Comments View — Removed Tailwind Container
+Same container fix in `resources/views/admin/comments.blade.php`.
 
-### 4. Phonebook All View — Tailwind → Bootstrap 5
-Rewrote `resources/views/phonebook-all.blade.php` from Tailwind to Bootstrap 5 (alphabetical grouping, contact cards, phone/email/address display).
+### 4. Admin Users View — Removed Tailwind Container
+Same container fix in `resources/views/admin/users.blade.php`.
 
-### 5. E2E Tests: 41/41 Passed
-All 41 Playwright tests pass after all template fixes.
+### 5. Contest Show View — Tailwind → Bootstrap 5
+- Fixed `text-body/70` → `text-muted` for info row
+- Fixed `text-4xl text-body/40` → `fa-3x text-muted` for empty state icon
+- Fixed `rounded-3xl p-6` → standard `card mt-4` for contest rules section
+- Removed `prose prose-sm text-body/80 max-w-none` wrapper
+
+### 6. Navigation — Alpine.js → Vanilla JS
+Replaced all Alpine.js directives (`x-data`, `x-show`, `@click`, `x-on:click`, `:class`, `x-transition`) in `resources/views/layouts/navigation.blade.php` with vanilla JavaScript toggle functions. Alpine.js was never loaded in the app layout so dropdowns and mobile menu were broken.
+
+### 7. E2E Tests: 20/22 Passed
+20 tests pass. 2 failures are pre-existing timeout issues (admin phonebook contact add at 30s, admin settings form submit at 32s `networkidle` wait) — not related to template changes. No 500 errors on any page.
 
 ## Pending Items
 
@@ -141,6 +150,7 @@ All 41 Playwright tests pass after all template fixes.
 4. **rclone + Telegram** — Configured in old site — Laravel .env needs these values
 5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up.
 6. **Contest vote API test** — Add E2E test for contest voting flow
+7. **Profile partials** — Still have Tailwind classes in Breeze-provided partials (update-profile-information, update-password, delete-user). These use Breeze Blade components so they render, but flash message `x-data` auto-hide won't work without Alpine.
 
 ## Resumable Work
 

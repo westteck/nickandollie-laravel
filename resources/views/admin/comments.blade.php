@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Admin — Comment Moderation')
 @section('content')
-<div class="mx-auto max-w-6xl px-4 py-6">
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h4 mb-0"><i class="fas fa-comments me-2"></i>Comment Moderation</h1>
         <div class="d-flex gap-2">
