@@ -55,10 +55,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Contest CRUD
-    Route::get('/contests', [Admin\ContestController::class, 'index'])->name('contests');
-    Route::post('/contests', [Admin\ContestController::class, 'store'])->name('contests.store');
-    Route::put('/contests/{id}', [Admin\ContestController::class, 'update'])->name('contests.update');
-    Route::delete('/contests/{id}', [Admin\ContestController::class, 'destroy'])->name('contests.destroy');
+    Route::get('/contests', [AdminContestController::class, 'index'])->name('contests');
+    Route::post('/contests', [AdminContestController::class, 'store'])->name('contests.store');
+    Route::put('/contests/{id}', [AdminContestController::class, 'update'])->name('contests.update');
+    Route::delete('/contests/{id}', [AdminContestController::class, 'destroy'])->name('contests.destroy');
 
     // Admin User Management
     Route::get('/users', [UserManagementController::class, 'index'])->name('users');
