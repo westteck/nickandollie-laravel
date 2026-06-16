@@ -110,6 +110,52 @@ document.addEventListener('click', function(e) {
 </script>
 
 <style>
+/* Moons & Stars gallery (5×5 grid per request) */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+}
+@media (max-width: 1199px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 991px)  { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 575px)  { .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; } }
+.gallery-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.85rem;
+    overflow: hidden;
+    background: rgba(11, 16, 32, 0.6);
+    border: 1px solid rgba(194, 184, 183, 0.2);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    display: block;
+}
+.gallery-item:hover {
+    transform: translateY(-3px);
+    border-color: rgba(194, 184, 183, 0.5);
+    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+}
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.gallery-item .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(11, 16, 32, 0.7) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0.75rem;
+    color: rgba(250, 235, 215, 0.85);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.gallery-item:hover .overlay { opacity: 1; }
+
 /* Moons & Stars input + card overrides (defeats Bootstrap defaults) */
 .glass-panel {
     backdrop-filter: blur(24px) saturate(140%) !important;

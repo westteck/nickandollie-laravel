@@ -4,23 +4,23 @@
 @section('content')
 
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="mb-0" style="color: var(--primary);">Photo Gallery</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="font-display mb-0" style="font-family:'Playfair Display',serif;font-weight:600;color:#FAEBD7;font-size:2rem;letter-spacing:0.02em;">Photo Gallery</h1>
         @auth
-        <a href="{{ route('upload') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-upload me-1"></i> Upload
+        <a href="{{ route('upload') }}" class="nav-cta">
+            <i class="fas fa-upload me-2"></i>Upload
         </a>
         @endauth
     </div>
 
     @if($photos->isEmpty())
-        <div class="text-center py-5">
-            <i class="fas fa-images fa-3x text-muted mb-3"></i>
-            <h2 class="h5 text-muted">No photos yet</h2>
-            <p class="text-muted mb-4">Be the first to share a memory!</p>
+        <div class="glass-panel text-center py-5" style="border-radius:1.5rem;">
+            <i class="fas fa-images fa-3x mb-3" style="color:rgba(194,184,183,0.6);"></i>
+            <h2 class="h5" style="color:rgba(250,235,215,0.85);font-family:'Playfair Display',serif;">No photos yet</h2>
+            <p style="color:rgba(250,235,215,0.6);font-family:'Source Sans 3',sans-serif;">Be the first to share a memory!</p>
             @auth
-            <a href="{{ route('upload') }}" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus me-1"></i>Upload Photos
+            <a href="{{ route('upload') }}" class="nav-cta">
+                <i class="fas fa-plus me-2"></i>Upload Photos
             </a>
             @endauth
         </div>
@@ -44,17 +44,17 @@
         <nav aria-label="Gallery pagination" class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item {{ $page <= 1 ? 'disabled' : '' }}">
-                    <a class="page-link" href="?page={{ $page - 1 }}&limit={{ $limit }}" aria-label="Previous">
+                    <a class="page-link" href="?page={{ $page - 1 }}&limit={{ $limit }}" aria-label="Previous" style="background:rgba(11,16,32,0.6);border-color:rgba(194,184,183,0.3);color:#FAEBD7;">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 @for($i = max(1, $page - 2); $i <= min($pages, $page + 2); $i++)
                 <li class="page-item {{ $i == $page ? 'active' : '' }}">
-                    <a class="page-link" href="?page={{ $i }}&limit={{ $limit }}">{{ $i }}</a>
+                    <a class="page-link" href="?page={{ $i }}&limit={{ $limit }}" style="{{ $i == $page ? 'background:linear-gradient(135deg,#171d33,#36538f);border-color:transparent;color:#FAEBD7;' : 'background:rgba(11,16,32,0.6);border-color:rgba(194,184,183,0.3);color:#FAEBD7;' }}">{{ $i }}</a>
                 </li>
                 @endfor
                 <li class="page-item {{ $page >= $pages ? 'disabled' : '' }}">
-                    <a class="page-link" href="?page={{ $page + 1 }}&limit={{ $limit }}" aria-label="Next">
+                    <a class="page-link" href="?page={{ $page + 1 }}&limit={{ $limit }}" aria-label="Next" style="background:rgba(11,16,32,0.6);border-color:rgba(194,184,183,0.3);color:#FAEBD7;">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

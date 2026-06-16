@@ -10,7 +10,7 @@ class GalleryController extends Controller
     public function index(Request $request)
     {
         $page = $request->input('page', 1);
-        $limit = $request->input('limit', 30);
+        $limit = $request->input('limit', 25);
         $offset = ($page - 1) * $limit;
 
         // Total count
