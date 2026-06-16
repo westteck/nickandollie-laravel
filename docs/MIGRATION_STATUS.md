@@ -186,7 +186,10 @@ Replaced Tailwind/custom theme classes in Breeze Blade components with standard 
 5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up. (Low priority — doesn't affect runtime)
 6. **Pre-existing E2E timeouts** — Admin phonebook add and settings form submit timeout at 30s (low priority, functional)
 
-## Resumable Work
+### 6. Route Fix: Duplicate Contest Routes
+**Fixed:** `routes/web.php` had duplicate contest CRUD routes and a broken `Admin\\ContestController::class` reference (relative namespace). Also missing phonebook and theme preview routes.
+- Rewrote routes/web.php cleanly with all routes properly referenced
+- Verified with `php artisan route:list` — all routes load correctly
 
 Continue with pending items above. After each:
 1. Update this doc
