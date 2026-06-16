@@ -115,7 +115,21 @@
 <section class="container my-5 pb-5 mb-5" aria-label="Login and registration">
     <div class="glass-panel mx-auto p-4 p-md-5" style="max-width: 480px; border-radius: 1.5rem;">
 
-        <div id="flash-messages"></div>
+        <div id="flash-messages">
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert" style="background:rgba(196,92,92,0.15);border:1px solid rgba(196,92,92,0.4);color:#F5C6C6;border-radius:0.75rem;padding:0.75rem 1rem;margin-bottom:1rem;font-family:'Source Sans 3',sans-serif;font-size:0.9rem;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @foreach ($errors->all() as $error)
+                        {{ $error }}@if (!$loop->last)<br>@endif
+                    @endforeach
+                </div>
+            @endif
+            @if (session('status'))
+                <div class="alert alert-success" role="alert" style="background:rgba(92,156,107,0.15);border:1px solid rgba(92,156,107,0.4);color:#C6E5CC;border-radius:0.75rem;padding:0.75rem 1rem;margin-bottom:1rem;font-family:'Source Sans 3',sans-serif;font-size:0.9rem;">
+                    <i class="fas fa-check-circle me-2"></i>{{ session('status') }}
+                </div>
+            @endif
+        </div>
 
         <ul class="nav nav-tabs mb-4" id="auth-tabs" role="tablist" aria-label="Authentication options">
             <li class="nav-item" role="presentation">
