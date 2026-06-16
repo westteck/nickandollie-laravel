@@ -114,7 +114,7 @@ function editCaption(id, caption, uploader, photoUrl) {
 function saveCaption() {
     var id = document.getElementById('captionPhotoId').value;
     var caption = document.getElementById('captionInput').value;
-    fetch('{{ route("admin.photos.update", "") }}/' + id, {
+    fetch('/admin/photos/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
         body: JSON.stringify({ caption: caption })
@@ -138,7 +138,7 @@ function deletePhoto(id) {
 
 function confirmDeletePhoto() {
     var id = document.getElementById('deletePhotoId').value;
-    fetch('{{ route("admin.photos.destroy", "") }}/' + id, {
+    fetch('/admin/photos/' + id, {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': csrfToken }
     })

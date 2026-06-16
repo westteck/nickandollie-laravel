@@ -120,7 +120,7 @@ function deleteComment(id) {
 
 function confirmDeleteComment() {
     var id = document.getElementById('deleteCommentId').value;
-    fetch('{{ route("admin.comments.destroy", "") }}/' + id, {
+    fetch('/admin/comments/' + id, {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': csrfToken }
     })

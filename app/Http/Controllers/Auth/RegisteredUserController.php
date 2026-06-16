@@ -67,6 +67,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'name' => ['nullable', 'string', 'max:255'],
             'guest_name' => ['required', 'string', 'max:255'],
             'first_name' => ['nullable', 'string', 'max:100'],
             'last_name' => ['nullable', 'string', 'max:100'],
@@ -98,6 +99,7 @@ class RegisteredUserController extends Controller
             ->value('label');
 
         $user = User::create([
+            'name' => $validated['name'] ?? $validated['guest_name'],
             'guest_name' => $validated['guest_name'],
             'first_name' => $validated['first_name'] ?? null,
             'last_name' => $validated['last_name'] ?? null,

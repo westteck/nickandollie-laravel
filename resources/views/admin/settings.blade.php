@@ -95,5 +95,107 @@
             </a>
         </div>
     </div>
+
+    {{-- Page Content Manager --}}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Page Content</h2>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-3" style="font-size: 0.85rem;">Manage static page content stored in the database. Used for hero sections and other editable text blocks.</p>
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Page Key</th>
+                            <th>Content Preview</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($sitePages as $page)
+                        <tr>
+                            <td><code>{{ $page->page_key }}</code></td>
+                            <td class="text-muted small" style="max-width: 300px;">{{ Str::limit(strip_tags($page->content), 80) }}</td>
+                            <td class="text-muted small">{{ $page->updated_at ? \Carbon\Carbon::parse($page->updated_at)->diffForHumans() : '—' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="editPage('{{ $page->page_key }}', '{{ addslashes(strip_tags($page->content)) }}')">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">No page content yet.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+{{-- Page Edit Modal --}}
+<div class="modal fade" id="pageEditModal" tabindex="-1" aria-labelledby="pageEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pageEditModalLabel">Edit Page Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editPageKey">
+                <div class="mb-3">
+                    <label for="editPageContent" class="form-label">Content (HTML allowed)</label>
+                    <textarea class="form-control" id="editPageContent" rows="10" placeholder="<h1>...</h1><p>...</p>"></textarea>
+                    <div class="form-text">Allowed: h1, h2, h3, p, br, strong, em, ul, li</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="savePage()">
+                    <i class="fas fa-save me-1"></i>Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+function editPage(key, content) {
+    document.getElementById('editPageKey').value = key;
+    document.getElementById('editPageContent').value = content;
+    var modal = new bootstrap.Modal(document.getElementById('pageEditModal'));
+    modal.show();
+}
+
+function savePage() {
+    var key = document.getElementById('editPageKey').value;
+    var content = document.getElementById('editPageContent').value;
+    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    fetch('/admin/settings/page', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ page_key: key, content: content })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Failed to save.');
+        }
+    })
+    .catch(function() { alert('Network error.'); });
+}
+</script>
+@endpush
 @endsection

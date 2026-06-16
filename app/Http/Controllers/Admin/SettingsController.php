@@ -20,7 +20,11 @@ class SettingsController extends Controller
             'maintenance_mode' => false,
         ];
 
-        return view('admin.settings', compact('settings'));
+        $sitePages = DB::table('site_pages')
+            ->orderBy('page_key', 'asc')
+            ->get();
+
+        return view('admin.settings', compact('settings', 'sitePages'));
     }
 
     public function update(Request $request)
@@ -44,5 +48,38 @@ class SettingsController extends Controller
         }
 
         return redirect()->route('admin.settings')->with('status', 'Settings saved.');
+    }
+
+    /**
+     * Save a single site_pages row (page content editor).
+     */
+    public function savePage(Request $request)
+    {
+        $data = $request->validate([
+            'page_key' => ['required', 'string', 'max:100'],
+            'content' => ['nullable', 'string'],
+        ]);
+
+        $existing = DB::table('site_pages')
+            ->where('page_key', $data['page_key'])
+            ->first();
+
+        if ($existing) {
+            DB::table('site_pages')
+                ->where('id', $existing->id)
+                ->update([
+                    'content' => $data['content'],
+                    'updated_at' => now(),
+                ]);
+        } else {
+            DB::table('site_pages')->insert([
+                'page_key' => $data['page_key'],
+                'content' => $data['content'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

@@ -15,6 +15,7 @@ class User extends Authenticatable
     public $timestamps = true;
 
     protected $fillable = [
+        'name',
         'guest_name',
         'first_name',
         'last_name',
@@ -52,7 +53,13 @@ class User extends Authenticatable
 
     /**
      * Map legacy guest_name to name for Breeze compatibility.
+     * The DB column is `guest_name`; Breeze sends `name`.
      */
+    public function setNameAttribute($value): void
+    {
+        $this->attributes['guest_name'] = $value;
+    }
+
     public function getNameAttribute(): string
     {
         if (!empty($this->attributes['name'] ?? null)) {

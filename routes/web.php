@@ -53,6 +53,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/phonebook/{id}', [AdminPhonebookController::class, 'destroy'])->name('phonebook.destroy');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/page', [SettingsController::class, 'savePage'])->name('settings.page');
 
     // Contest CRUD
     Route::get('/contests', [AdminContestController::class, 'index'])->name('contests');
