@@ -1,6 +1,6 @@
 # Laravel Rebuild — Migration Status & Task Board
 
-## Last Updated: 2026-06-15 (cron job #3)
+## Last Updated: 2026-06-16 (cron job #4)
 
 ## Architecture
 - **Stack:** Laravel 11, Breeze auth, Tailwind CSS (unused), Legacy CSS (active), MariaDB
@@ -60,7 +60,7 @@
 | `api/like.php` | `POST /api/photo/{id}/like` | ✅ |
 | Profile tabs | `GET /profile/{favorites,uploads,votes,comments}` | ✅ |
 
-## Eloquent Models Created (2026-06-15 cron #3)
+## Eloquent Models Created
 
 | Model | Table | Relationships |
 |-------|-------|---------------|
@@ -116,28 +116,22 @@ Legacy `inc/mail.php` reads from `.env`:
 - `lookup_options` — dropdown options
 - `settings` — site-wide settings (new in Laravel)
 
-## Changes Made in This Session (2026-06-15 cron #3)
+## Changes Made in This Session (2026-06-16 cron #4)
 
-### 1. Eloquent Models Created (14 models)
-Created proper Eloquent models for all database tables: Photo, Vote, Favorite, Rating, Comment, Contest, ContestEntry, ContestVote, AddressBook, SitePage, LookupOption, ThemeSetting, Setting, plus updated User. Models include relationships, accessors, scopes, and helper methods. Controllers still use `DB::table()` — models available for incremental migration.
+### 1. Fixed Admin Contest Routes (routes/web.php)
+Admin contest CRUD routes were incorrectly pointing to the public `ContestController` instead of `Admin\ContestController`. Changed all 4 routes (index, store, update, destroy) to use `Admin\ContestController`. This was a functional bug — admin contest management would have served the public contest list view.
 
-### 2. Admin Dashboard — Tailwind → Bootstrap 5
-Rewrote `admin/dashboard.blade.php` from Tailwind classes to Bootstrap 5 + legacy CSS (card grid, stats row, table, quick links).
+### 2. Gallery View — Removed Tailwind Residue
+Rewrote `resources/views/gallery.blade.php` (unused stub) to Bootstrap 5. The active view `wedding/gallery.blade.php` was already clean.
 
-### 3. Admin Contests — Tailwind → Bootstrap 5
-Rewrote `admin/contests.blade.php` from Tailwind to Bootstrap 5 (table, form, status badges, action buttons).
+### 3. Contest List View — Tailwind → Bootstrap 5
+Rewrote `resources/views/contest.blade.php` from Tailwind classes (`glass-panel`, `text-sec`, `text-body`, `rounded-2xl`, etc.) to Bootstrap 5 card grid with status badges, entry counts, and hover effects matching the legacy design.
 
-### 4. Admin Phonebook — Tailwind → Bootstrap 5
-Rewrote `admin/phonebook.blade.php` from Tailwind to Bootstrap 5 (table, form, contact CRUD).
+### 4. Phonebook All View — Tailwind → Bootstrap 5
+Rewrote `resources/views/phonebook-all.blade.php` from Tailwind to Bootstrap 5 (alphabetical grouping, contact cards, phone/email/address display).
 
-### 5. Upload JS — Tailwind → Bootstrap classes
-Fixed `public/js/upload.js` preview grid to use Bootstrap classes + inline styles instead of Tailwind (`bg-slate-100`, `rounded-xl`, `aspect-square`, etc.).
-
-### 6. CSS — Tailwind compatibility aliases
-Added ~150 lines of Tailwind-to-legacy-CSS compatibility aliases in `style.css` (`glass-panel`, `bg-slate-*`, `rounded-xl`, `rounded-2xl`, `aspect-square`, `bg-green-100`, `text-green-700`, etc.). This ensures remaining partial Tailwind references in views render correctly.
-
-### 7. E2E tests: 41/41 passed
-All 41 tests pass after all template/JS/CSS changes.
+### 5. E2E Tests: 41/41 Passed
+All 41 Playwright tests pass after all template fixes.
 
 ## Pending Items
 

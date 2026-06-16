@@ -1,21 +1,21 @@
 @extends('layouts.app')
 @section('title', 'Phone Book — All Entries')
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex items-center justify-between">
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Wedding Directory</p>
-            <h1 class="text-3xl font-bold sm:text-4xl"><i class="fas fa-address-book me-2"></i>Phone Book</h1>
-            <p class="text-body/70">Family and guest contact information</p>
+            <h1 class="mb-0" style="color: var(--primary);"><i class="fas fa-address-book me-2"></i>Phone Book</h1>
+            <p class="text-muted small mb-0">Family and guest contact information</p>
         </div>
-        <a href="{{ route('phonebook') }}" class="rounded-md border border-sec/30 px-4 py-2 text-sm text-body/80 hover:bg-slate-50">
+        <a href="{{ route('phonebook') }}" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-arrow-left me-1"></i>Back to Phonebook
         </a>
     </div>
 
     @forelse($grouped as $letter => $entries)
         <div class="mb-4">
-            <h5 class="text-sec border-bottom pb-1 mb-3"><i class="fas fa-font me-1"></i>{{ $letter }}</h5>
+            <h5 class="text-primary border-bottom pb-1 mb-3"><i class="fas fa-font me-1"></i>{{ $letter }}</h5>
             <div class="row g-2">
                 @foreach($entries as $e)
                     <div class="col-md-6 col-lg-4">
@@ -51,7 +51,7 @@
                                 @if($e->address || $e->city || $e->state || $e->zip)
                                     <div class="text-muted small mt-1">
                                         <i class="fas fa-map-marker-alt me-1"></i>
-                                        {{ array_filter([$e->address, $e->city, $e->state, $e->zip]) ? implode(', ', array_filter([$e->address, $e->city, $e->state, $e->zip])) : '' }}
+                                        {{ implode(', ', array_filter([$e->address, $e->city, $e->state, $e->zip])) }}
                                     </div>
                                 @endif
                             </div>
@@ -61,10 +61,11 @@
             </div>
         </div>
     @empty
-        <div class="text-center py-10">
-            <i class="fas fa-address-book fa-3x text-body/40 mb-3"></i>
-            <p class="text-body/70">No entries yet.</p>
+        <div class="text-center py-5">
+            <i class="fas fa-address-book fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No entries yet.</p>
         </div>
     @endforelse
-</section>
+</div>
+
 @endsection

@@ -5,7 +5,7 @@
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="mb-0" style="color: var(--primary)">Photo Gallery</h1>
+        <h1 class="mb-0" style="color: var(--primary);">Photo Gallery</h1>
         @auth
         <a href="{{ route('upload') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-upload me-1"></i> Upload
@@ -15,7 +15,7 @@
 
     @if($photos->isEmpty())
         <div class="text-center py-5">
-            <i class="fas fa-images text-4xl text-body/40 mb-4"></i>
+            <i class="fas fa-images fa-3x text-muted mb-3"></i>
             <h2 class="h5 text-muted">No photos yet</h2>
             <p class="text-muted mb-4">Be the first to share a memory!</p>
             @auth

@@ -3,53 +3,69 @@
 @section('title', 'Contests')
 
 @section('content')
-<section class="mx-auto max-w-6xl px-4 py-8 sm:py-12 space-y-6">
-    <div class="flex flex-col gap-2">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sec">Community votes</p>
-        <h1 class="text-3xl font-bold sm:text-4xl">Contests</h1>
-        <p class="max-w-2xl text-body">Vote for your favorite wedding photos in each category!</p>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="mb-0" style="color: var(--primary);">Contests</h1>
+            <p class="text-muted small mb-0">Vote for your favorite photos in each category!</p>
+        </div>
     </div>
 
     @if($contests->isEmpty())
-        <div class="text-center py-12">
-            <i class="fas fa-trophy text-4xl text-body/40 mb-4"></i>
-            <h2 class="text-lg font-medium text-body/70">No contests available yet</h2>
-            <p class="text-body/60">Check back soon for new contests!</p>
+        <div class="text-center py-5">
+            <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+            <h2 class="h5 text-muted">No contests available yet</h2>
+            <p class="text-muted">Check back soon for new contests!</p>
         </div>
     @else
-        <div class="grid gap-4 md:grid-cols-2">
+        <div class="row g-4">
             @foreach($contests as $contest)
-            <a href="{{ route('contest.show', $contest->id) }}" class="rounded-2xl glass-panel p-6  hover:shadow-md transition-shadow">
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center" style="background: var(--primary)">
-                        <i class="fas {{ $contest->icon ?? 'fa-trophy' }} text-white text-lg"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <h2 class="text-lg font-semibold truncate" style="color: var(--primary)">{{ $contest->title }}</h2>
+            <div class="col-md-6 col-lg-4">
+                <div class="card contest-card h-100 {{ $contest->status === 'active' ? 'border-success' : ($contest->status === 'closed' ? 'border-warning' : 'border-secondary') }}">
+                    <div class="card-header bg-white py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas {{ $contest->icon ?? 'fa-trophy' }} me-2 text-primary"></i>{{ $contest->title }}
+                            </h5>
                             @if($contest->status === 'active')
-                                <span class="badge bg-success text-xs">Active</span>
+                                <span class="badge bg-success">Active</span>
                             @elseif($contest->status === 'closed')
-                                <span class="badge bg-warning text-xs">Closed</span>
-                            @elseif($contest->status === 'draft')
-                                <span class="badge bg-secondary text-xs">Draft</span>
+                                <span class="badge bg-warning text-dark"><i class="fas fa-lock me-1"></i>Closed</span>
+                            @else
+                                <span class="badge bg-secondary">{{ ucfirst($contest->status) }}</span>
                             @endif
                         </div>
                         @if($contest->description)
-                            <p class="text-sm text-body/80 line-clamp-2">{{ $contest->description }}</p>
+                            <p class="small text-muted mb-0 mt-1">{{ $contest->description }}</p>
                         @endif
-                        <div class="flex items-center gap-4 mt-3 text-xs text-body/70">
-                            <span><i class="fas fa-images me-1"></i>{{ $contest->entry_count }} entries</span>
-                            @if($contest->prize)
-                                <span><i class="fas fa-gift me-1"></i>{{ $contest->prize }}</span>
-                            @endif
-                        </div>
                     </div>
-                    <i class="fas fa-chevron-right text-body/40 mt-1"></i>
+                    <div class="card-body py-2">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small text-muted"><i class="fas fa-images me-1"></i> {{ $contest->entry_count }} entries</span>
+                        </div>
+                        @if($contest->prize)
+                            <div class="small text-muted"><i class="fas fa-gift me-1"></i>{{ $contest->prize }}</div>
+                        @endif
+                    </div>
+                    <div class="card-footer bg-white py-2">
+                        <a href="{{ route('contest.show', $contest->id) }}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fas fa-eye me-1"></i> View Contest
+                        </a>
+                    </div>
                 </div>
-            </a>
+            </div>
             @endforeach
         </div>
     @endif
-</section>
+</div>
+
+<style>
+.contest-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.contest-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08);
+}
+</style>
 @endsection
