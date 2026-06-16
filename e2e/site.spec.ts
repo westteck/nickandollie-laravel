@@ -681,3 +681,92 @@ test('footer exists on home page', async ({ page }) => {
   const body = await page.content();
   expect(body).toContain('Nick') && expect(body).toContain('Ollie');
 });
+
+/* ── 25. Contest Vote API ─────────────────────────────── */
+
+test('contest vote API requires authentication', async ({ page }) => {
+  const response = await page.request.post(`${SITE}/api/contest-vote`, {
+    data: { entry_id: 1 }
+  });
+  // Should return 401 (unauthorized) or 302 (redirect to login)
+  expect([401, 302]).toContain(response.status());
+});
+
+test('contest vote API rejects missing entry_id', async ({ page }) => {
+  await loginAsAdmin(page);
+  const response = await page.request.post(`${SITE}/api/contest-vote`, {
+    data: {}
+  });
+  // Should return 400 (bad request)
+  expect([400, 422]).toContain(response.status());
+  await logout(page);
+});
+
+test('contest vote API rejects invalid entry_id', async ({ page }) => {
+  await loginAsAdmin(page);
+  const response = await page.request.post(`${SITE}/api/contest-vote`, {
+    data: { entry_id: 999999 }
+  });
+  // Should return 404 (not found)
+  expect([404, 400]).toContain(response.status());
+  await logout(page);
+});
+
+/* ── 26. Admin Photo Management ────────────────────────── */
+
+test('admin photo management page loads', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/admin/photos`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+  // Should have photo grid or empty state
+  expect(body).toContain('Photo Management');
+  await logout(page);
+});
+
+test('admin comment moderation page loads', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/admin/comments`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+  expect(body).toContain('Comment');
+  await logout(page);
+});
+
+/* ── 27. Admin User Management ─────────────────────────── */
+
+test('admin user management page loads', async ({ page }) => {
+  await loginAsAdmin(page);
+  await page.goto(`${SITE}/admin/users`);
+  await page.waitForLoadState('networkidle');
+  const body = await page.content();
+  expect(body).not.toContain('Error 500');
+  expect(body).toContain('User Management');
+  await logout(page);
+});
+
+/* ── 28. API: Photo Interactions ───────────────────────── */
+
+test('photo like API requires authentication', async ({ page }) => {
+  const response = await page.request.post(`${SITE}/api/photo/1/like`);
+  expect([401, 302]).toContain(response.status());
+});
+
+test('photo favorite API requires authentication', async ({ page }) => {
+  const response = await page.request.post(`${SITE}/api/photo/1/favorite`);
+  expect([401, 302]).toContain(response.status());
+});
+
+test('photo rate API requires authentication', async ({ page }) => {
+  const response = await page.request.post(`${SITE}/api/photo/1/rate`, {
+    data: { rating: 5 }
+  });
+  expect([401, 302]).toContain(response.status());
+});
+
+test('photo comments API returns 404 for invalid photo', async ({ page }) => {
+  const response = await page.request.get(`${SITE}/api/photo/999999/comments`);
+  expect([404]).toContain(response.status());
+});

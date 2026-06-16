@@ -1,6 +1,6 @@
 # Laravel Rebuild — Migration Status & Task Board
 
-## Last Updated: 2026-06-18 (cron job #6)
+## Last Updated: 2026-06-18 (cron job #7)
 
 ## Architecture
 - **Stack:** Laravel 11, Breeze auth, Tailwind CSS (unused), Legacy CSS (active), MariaDB
@@ -117,7 +117,34 @@ Legacy `inc/mail.php` reads from `.env`:
 - `lookup_options` — dropdown options
 - `settings` — site-wide settings (new in Laravel)
 
-## Changes Made in This Session (2026-06-18 cron #6)
+## Changes Made in This Session (2026-06-18 cron #7)
+
+### 1. Layout Bug Fix: Missing @stack Directives
+**Critical fix:** `upload.blade.php` and `contest-show.blade.php` used `@push('styles')` and `@push('scripts')` but the layouts had no `@stack()` directives. This meant Cropper.js CSS/JS and upload.js were never loaded on the upload page, and contest voting JS was never loaded on the contest detail page.
+- Added `@stack('styles')` and `@stack('scripts')` to `app.blade.php`
+- Added `@stack('styles')` and `@stack('scripts')` to `guest.blade.php`
+
+### 2. Profile View Bug Fix: Array vs Object Access
+**Fixed:** `wedding/profile.blade.php` favorites section used object notation (`$photo->id`, `$photo->thumb_filename`) but the controller returns arrays.
+- Changed to array notation: `$photo['id']`, `$photo['thumb_url']`, `$photo['caption']`
+
+### 3. Guest Layout Simplification
+- Removed unused `auth-page`/`auth-container` wrapper divs from `guest.blade.php`
+- Added `auth-body` class to body for gradient background
+- Added `.auth-body` CSS with wedding gradient background to `public/css/style.css`
+
+### 4. Static Assets
+- Copied `templates.css` from old site to `public/css/templates.css`
+
+### 5. E2E Tests: 8 New Tests Added
+Added tests for:
+- Contest vote API (auth required, missing entry_id, invalid entry_id)
+- Admin photo management page loads
+- Admin comment moderation page loads
+- Admin user management page loads
+- Photo interaction APIs (like/favorite/rate auth required, comments 404)
+
+## Changes Made in Previous Session (2026-06-18 cron #6)
 
 ### 1. Alpine.js → Vanilla JS/ Bootstrap 5 (Profile Partials)
 Replaced all Alpine.js directives in Breeze profile partials with vanilla JS and Bootstrap 5:
@@ -152,13 +179,12 @@ Replaced Tailwind/custom theme classes in Breeze Blade components with standard 
 
 ## Pending Items
 
-1. **Mail config** — SMTP credentials from old `.env` (Mailable class created, needs credentials)
+1. **Mail config** — SMTP credentials from old `.env` needed in new Laravel `.env` (Mailable class created, needs credentials)
 2. **Models → Controllers** — Wire Eloquent models into controllers (incremental, low priority since DB::table works)
 3. **Smoke tests** — `test.sh` 16 tests from legacy (not yet ported)
 4. **rclone + Telegram** — Configured in old site — Laravel .env needs these values
-5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up.
-6. **Contest vote API test** — Add E2E test for contest voting flow
-7. **Pre-existing E2E timeouts** — Admin phonebook add and settings form submit timeout at 30s (low priority, functional)
+5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up. (Low priority — doesn't affect runtime)
+6. **Pre-existing E2E timeouts** — Admin phonebook add and settings form submit timeout at 30s (low priority, functional)
 
 ## Resumable Work
 
