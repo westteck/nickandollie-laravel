@@ -87,8 +87,7 @@ class ProfileController extends Controller
         // Update user fields
         $fields = [];
         if (isset($input['name'])) {
-            $user->name = htmlspecialchars(trim($input['name']), ENT_QUOTES, 'UTF-8');
-            $user->guest_name = $user->name;
+            $user->guest_name = htmlspecialchars(trim($input['name']), ENT_QUOTES, 'UTF-8');
         }
         if (isset($input['firstname'])) {
             $user->first_name = htmlspecialchars(trim($input['firstname']), ENT_QUOTES, 'UTF-8');

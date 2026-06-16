@@ -98,15 +98,14 @@ class RegisteredUserController extends Controller
             ->value('label');
 
         $user = User::create([
-            'name' => $validated['guest_name'],
             'guest_name' => $validated['guest_name'],
             'first_name' => $validated['first_name'] ?? null,
             'last_name' => $validated['last_name'] ?? null,
             'username' => $validated['username'] ?? null,
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'connection' => $validated['connection'],  // nick/ollie/both — matches ENUM column directly
-            'core_group' => $coreGroupLabel ?? $validated['core_group'], // label text matches ENUM column
+            'connection' => $validated['connection'],
+            'core_group' => $coreGroupLabel ?? $validated['core_group'],
             'specific_relationship' => $validated['specific_relationship'] ?? null,
             'address' => $validated['address'] ?? null,
             'city' => $validated['city'] ?? null,

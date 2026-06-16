@@ -13,23 +13,38 @@ $width = match ($width) {
 };
 @endphp
 
-<div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
-    <div @click="open = ! open">
+<div class="relative dropdown-wrapper">
+    <div class="dropdown-trigger" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
         {{ $trigger }}
     </div>
 
-    <div x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-75"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-            class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg {{ $alignmentClasses }}"
-            style="display: none;"
-            @click="open = false">
-        <div class="rounded-md ring-1 ring-black ring-opacity-5 {{ $contentClasses }}">
+    <div class="dropdown-menu d-none position-absolute z-50 mt-2 rounded shadow {{ $alignmentClasses }}"
+         style="min-width: 12rem;">
+        <div class="bg-white rounded border {{ $contentClasses }}">
             {{ $content }}
         </div>
     </div>
 </div>
+
+<style>
+.dropdown-wrapper { position: relative; }
+.dropdown-menu { min-width: 12rem; }
+.dropdown-menu.show { display: block !important; }
+</style>
+
+<script>
+(function() {
+    var wrapper = document.currentScript.previousElementSibling;
+    var trigger = wrapper.querySelector('.dropdown-trigger');
+    var menu = wrapper.querySelector('.dropdown-menu');
+    if (!trigger || !menu) return;
+
+    function open() { menu.classList.add('show'); }
+    function close() { menu.classList.remove('show'); }
+    function toggle() { menu.classList.contains('show') ? close() : open(); }
+
+    trigger.addEventListener('click', function(e) { e.stopPropagation(); toggle(); });
+    trigger.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+    document.addEventListener('click', function(e) { if (!wrapper.contains(e.target)) close(); });
+})();
+</script>

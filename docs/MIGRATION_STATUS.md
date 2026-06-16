@@ -1,6 +1,6 @@
 # Laravel Rebuild — Migration Status & Task Board
 
-## Last Updated: 2026-06-17 (cron job #5)
+## Last Updated: 2026-06-18 (cron job #6)
 
 ## Architecture
 - **Stack:** Laravel 11, Breeze auth, Tailwind CSS (unused), Legacy CSS (active), MariaDB
@@ -98,6 +98,7 @@ Legacy `inc/mail.php` reads from `.env`:
 - Legacy rows have NULL IDs but valid enum strings
 - `COALESCE(conn.label, u.connection)` fallbacks needed for joins
 - `STRICT_TRANS_TABLES` is ON — empty strings to enum columns trigger errors
+- **No `name` column** — uses `guest_name` instead. Breeze's default `name` field mapped to `guest_name`.
 
 ### Key tables
 - `users` — guests and admin
@@ -116,31 +117,38 @@ Legacy `inc/mail.php` reads from `.env`:
 - `lookup_options` — dropdown options
 - `settings` — site-wide settings (new in Laravel)
 
-## Changes Made in This Session (2026-06-17 cron #5)
+## Changes Made in This Session (2026-06-18 cron #6)
 
-### 1. Admin Settings View — Tailwind → Bootstrap 5
-Completely rewrote `resources/views/admin/settings.blade.php` from Tailwind classes (`text-sec`, `text-body`, `rounded-md`, `border-slate-300`, `focus:border-[#171d33]`, `focus:ring-[#171d33]`, `bg-sec/20`, `border-sec/30`, etc.) to Bootstrap 5 card/form layout matching the rest of the admin panel.
+### 1. Alpine.js → Vanilla JS/ Bootstrap 5 (Profile Partials)
+Replaced all Alpine.js directives in Breeze profile partials with vanilla JS and Bootstrap 5:
+- `update-profile-information-form.blade.php` — replaced `x-data`/`x-show`/`x-transition`/`x-init` flash message auto-hide with vanilla JS `setTimeout`, replaced `<x-primary-button>` with `<button class="btn btn-primary">`
+- `update-password-form.blade.php` — same flash message fix
+- `delete-user-form.blade.php` — replaced `<x-danger-button>` Alpine click handler and `<x-modal>` with Bootstrap 5 modal (`modal fade`, `data-bs-toggle`, `data-bs-target`), added JS to auto-show modal on validation errors
 
-### 2. Admin Photos View — Removed Tailwind Container
-Replaced `mx-auto max-w-6xl px-4 py-6` with standard Bootstrap `container py-4` in `resources/views/admin/photos.blade.php`.
+### 2. Breeze Form Components → Bootstrap 5
+Replaced Tailwind/custom theme classes in Breeze Blade components with standard Bootstrap 5:
+- `text-input.blade.php` — `form-control` class
+- `input-label.blade.php` — `form-label fw-medium` class
+- `primary-button.blade.php` — `btn btn-primary` class
+- `danger-button.blade.php` — `btn btn-danger` class
+- `secondary-button.blade.php` — `btn btn-outline-secondary` class
+- `input-error.blade.php` — `text-danger small mt-1` class
 
-### 3. Admin Comments View — Removed Tailwind Container
-Same container fix in `resources/views/admin/comments.blade.php`.
+### 3. Alpine.js → Vanilla JS (Dropdown & Modal Components)
+- `dropdown.blade.php` — replaced `x-data`/`x-show`/`x-transition` with vanilla JS click/keyboard handlers and CSS `display` toggle
+- `modal.blade.php` — replaced Alpine modal with Bootstrap 5 modal (`modal fade`, `modal-dialog`), auto-shows on `$show=true` or validation errors
 
-### 4. Admin Users View — Removed Tailwind Container
-Same container fix in `resources/views/admin/users.blade.php`.
+### 4. Fix: Registration 500 Error (Critical Bug)
+**Root cause:** `User::create()` was trying to insert a `name` column that doesn't exist in the DB. The DB uses `guest_name` instead.
+- Removed `'name'` from `User::$fillable` array
+- Removed `'name' => $validated['guest_name']` from `RegisteredUserController::store()`
+- Fixed `ProfileController::update()` — changed `$user->name = ...` to `$user->guest_name = ...`
+- **Result:** Registration E2E test now passes (39/41 pass, up from 38/41)
 
-### 5. Contest Show View — Tailwind → Bootstrap 5
-- Fixed `text-body/70` → `text-muted` for info row
-- Fixed `text-4xl text-body/40` → `fa-3x text-muted` for empty state icon
-- Fixed `rounded-3xl p-6` → standard `card mt-4` for contest rules section
-- Removed `prose prose-sm text-body/80 max-w-none` wrapper
-
-### 6. Navigation — Alpine.js → Vanilla JS
-Replaced all Alpine.js directives (`x-data`, `x-show`, `@click`, `x-on:click`, `:class`, `x-transition`) in `resources/views/layouts/navigation.blade.php` with vanilla JavaScript toggle functions. Alpine.js was never loaded in the app layout so dropdowns and mobile menu were broken.
-
-### 7. E2E Tests: 20/22 Passed
-20 tests pass. 2 failures are pre-existing timeout issues (admin phonebook contact add at 30s, admin settings form submit at 32s `networkidle` wait) — not related to template changes. No 500 errors on any page.
+### 5. E2E Tests: 39/41 Passed
+39 tests pass. 2 failures are pre-existing timeout issues:
+- `admin can add a phonebook contact` — 30s timeout on `networkidle` after form submit
+- `admin can view and submit settings form` — 30s timeout on submit button click (resolves to invisible logout button)
 
 ## Pending Items
 
@@ -150,7 +158,7 @@ Replaced all Alpine.js directives (`x-data`, `x-show`, `@click`, `x-on:click`, `
 4. **rclone + Telegram** — Configured in old site — Laravel .env needs these values
 5. **Tailwind removal** — Tailwind/vite pipeline is installed but unused. Could be removed to clean up.
 6. **Contest vote API test** — Add E2E test for contest voting flow
-7. **Profile partials** — Still have Tailwind classes in Breeze-provided partials (update-profile-information, update-password, delete-user). These use Breeze Blade components so they render, but flash message `x-data` auto-hide won't work without Alpine.
+7. **Pre-existing E2E timeouts** — Admin phonebook add and settings form submit timeout at 30s (low priority, functional)
 
 ## Resumable Work
 

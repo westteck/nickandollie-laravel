@@ -47,17 +47,17 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div class="flex items-center gap-3">
+            <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
 
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-body/80"
-                >{{ __('Saved.') }}</p>
+                <span class="text-sm text-success" id="profile-saved-msg">{{ __('Saved.') }}</span>
+                <script>
+                    setTimeout(function() {
+                        var el = document.getElementById('profile-saved-msg');
+                        if (el) el.style.display = 'none';
+                    }, 2000);
+                </script>
             @endif
         </div>
     </form>
