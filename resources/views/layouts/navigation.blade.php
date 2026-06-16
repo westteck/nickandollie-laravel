@@ -110,6 +110,31 @@ document.addEventListener('click', function(e) {
 </script>
 
 <style>
+/* Moons & Stars input + card overrides (defeats Bootstrap defaults) */
+.glass-panel {
+    backdrop-filter: blur(24px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+    background: rgba(11, 16, 32, 0.55) !important;
+    border: 1px solid rgba(194, 184, 183, 0.25) !important;
+    box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.7) !important;
+    color: #FAEBD7;
+}
+.glass-panel .form-label { color: rgba(250, 235, 215, 0.85); font-family: 'Source Sans 3', sans-serif; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+.glass-panel .form-control {
+    background: rgba(11, 16, 32, 0.6) !important;
+    border: 1px solid rgba(194, 184, 183, 0.3) !important;
+    color: #FAEBD7 !important;
+    font-family: 'Source Sans 3', sans-serif;
+    border-radius: 0.75rem;
+    padding: 0.65rem 0.9rem;
+}
+.glass-panel .form-control::placeholder { color: rgba(194, 184, 183, 0.55); }
+.glass-panel .form-control:focus { background: rgba(11, 16, 32, 0.75) !important; border-color: #c2b8b7 !important; box-shadow: 0 0 0 3px rgba(194, 184, 183, 0.2) !important; }
+.glass-panel .nav-tabs { border-bottom: 1px solid rgba(194, 184, 183, 0.2); }
+.glass-panel .nav-tabs .nav-link { color: rgba(250, 235, 215, 0.6); border: 0; background: transparent; font-family: 'Source Sans 3', sans-serif; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.78rem; padding: 0.65rem 1rem; }
+.glass-panel .nav-tabs .nav-link.active { color: #FAEBD7; background: linear-gradient(135deg, #171d33, #36538f); border-radius: 9999px; }
+.glass-panel .nav-tabs .nav-link:not(.active):hover { color: #c2b8b7; }
+
 /* Moons & Stars nav (design.md §6) — minimal complement to app.css */
 .site-header { position: sticky; top: 0; z-index: 50; padding: 1.25rem 0; }
 .nav-shell {

@@ -12,11 +12,11 @@
                 <i class="fa-regular fa-calendar-heart me-2"></i> November 13, 2026
             </p>
 
-            <p class="font-accent" style="font-family:'Great Vibes',cursive;font-size:2.25rem;color:#c2b8b7;margin-bottom:0.5rem;">
+            <p class="font-accent" style="font-family:'Great Vibes',cursive;font-size:2.5rem;color:#c2b8b7;margin-bottom:1.25rem;line-height:1.2;">
                 We're getting married
             </p>
 
-            <h1 class="font-display" style="font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:600;color:#FAEBD7;letter-spacing:0.02em;line-height:1.15;margin-top:0.75rem;">
+            <h1 class="font-display" style="font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:600;color:#FAEBD7;letter-spacing:0.02em;line-height:1.2;margin-top:0;margin-bottom:0;">
                 Nick &amp; Ollie Fortune
             </h1>
 
@@ -41,7 +41,7 @@
 
 {{-- Login / Register Card (glassmorphism per design.md §5c) --}}
 @guest
-<section class="container my-5" aria-label="Login and registration">
+<section class="container my-5 pb-5 mb-5" aria-label="Login and registration">
     <div class="glass-panel mx-auto p-4 p-md-5" style="max-width: 480px; border-radius: 1.5rem;">
 
         <div id="flash-messages"></div>
