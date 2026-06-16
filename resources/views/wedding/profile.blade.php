@@ -82,11 +82,11 @@
                 @foreach($favorites as $photo)
                 <div class="col-6 col-md-4 col-lg-3">
                     <div class="card h-100 shadow-sm">
-                        <a href="{{ route('photo.show', $photo->id) }}">
-                            <img src="/storage/thumbs/{{ $photo->thumb_filename }}" class="card-img-top" alt="{{ $photo->caption ?? 'Photo' }}">
+                        <a href="{{ route('photo.show', $photo['id']) }}">
+                            <img src="{{ $photo['thumb_url'] }}" class="card-img-top" alt="{{ $photo['caption'] ?? 'Photo' }}">
                         </a>
                         <div class="card-body p-2">
-                            <p class="card-text mb-1 small text-truncate">{{ $photo->caption ?? '' }}</p>
+                            <p class="card-text mb-1 small text-truncate">{{ $photo['caption'] ?? '' }}</p>
                         </div>
                     </div>
                 </div>

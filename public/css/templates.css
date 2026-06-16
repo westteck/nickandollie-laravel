@@ -1,0 +1,45 @@
+/* Template-specific styles */
+
+/* Loveme template styles */
+.template-loveme {
+  /* We're already using these styles as default */
+}
+
+/* Ewed template styles */
+.template-ewed {
+  /* Font families */
+  --font-primary: 'Jost', sans-serif;
+  --font-script: 'Petit Formal Script', cursive;
+  
+  /* Additional styles for Ewed template */
+  font-family: var(--font-primary);
+}
+
+.template-ewed h1,
+.template-ewed h2,
+.template-ewed h3,
+.template-ewed h4,
+.template-ewed h5,
+.template-ewed h6 {
+  font-family: var(--font-primary);
+}
+
+.template-ewed .script-font {
+  font-family: var(--font-script);
+}
+
+/* Card styles for Ewed template */
+.template-ewed .card {
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+}
+
+/* Button styles for Ewed template */
+.template-ewed .btn {
+  border-radius: 0.5rem;
+}
+
+/* Navigation styles for Ewed template */
+.template-ewed .navbar {
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}

@@ -41,8 +41,12 @@
         <!-- Legacy CSS (full design system) -->
         <link rel="stylesheet" href="/css/style.css">
 
+        @yield('styles')
+        @stack('styles')
+
         <!-- Page-specific scripts -->
         @yield('scripts')
+        @stack('scripts')
     </head>
     <body>
 
