@@ -15,6 +15,7 @@ class User extends Authenticatable
     public $timestamps = true;
 
     protected $fillable = [
+        'name',
         'guest_name',
         'first_name',
         'last_name',
@@ -55,7 +56,11 @@ class User extends Authenticatable
      */
     public function getNameAttribute(): string
     {
-        return $this->guest_name ?? $this->first_name . ' ' . $this->last_name ?? '';
+        if (!empty($this->attributes['name'] ?? null)) {
+            return $this->attributes['name'];
+        }
+        $name = trim(($this->guest_name ?? '') . ' ' . ($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
+        return $name !== '' ? $name : 'Guest';
     }
 
     public function getIsAdminAttribute(): bool

@@ -25,13 +25,19 @@ class WeddingProfileController extends Controller
         $userId = $id ?? auth()->id();
 
         // Fetch user info
-        $user = DB::table('users')
-            ->where('id', $userId)
-            ->first();
+        $user = \App\Models\User::find($userId);
 
         if (!$user) {
             abort(404);
         }
+
+        // Hydrate legacy contact fields for view compatibility
+        $nameParts = explode(' ', (string) $user->name, 2);
+        $userArray = (array) $user;
+        $userArray['first_name'] = $nameParts[0] ?? null;
+        $userArray['last_name'] = $nameParts[1] ?? null;
+        $userArray['guest_name'] = $user->name;
+        $user = (object) $userArray;
 
         // Count user's photos
         $photoCount = DB::table('photos')

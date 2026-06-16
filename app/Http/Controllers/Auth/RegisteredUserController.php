@@ -38,18 +38,18 @@ class RegisteredUserController extends Controller
         // If no lookup_options, use defaults
         if ($connections->isEmpty()) {
             $connections = collect([
-                (object)['id' => 1, 'option_value' => 'nick', 'display_text' => "Nick's Side"],
-                (object)['id' => 2, 'option_value' => 'ollie', 'display_text' => "Ollie's Side"],
-                (object)['id' => 3, 'option_value' => 'both', 'display_text' => 'Both Sides'],
+                (object)['id' => 1, 'value' => 'nick', 'label' => "Nick's Side"],
+                (object)['id' => 2, 'value' => 'ollie', 'label' => "Ollie's Side"],
+                (object)['id' => 3, 'value' => 'both', 'label' => 'Both Sides'],
             ]);
         }
 
         if ($coreGroups->isEmpty()) {
             $coreGroups = collect([
-                (object)['id' => 1, 'option_value' => 'Immediate Family', 'display_text' => 'Immediate Family'],
-                (object)['id' => 2, 'option_value' => 'Extended Family / Relatives', 'display_text' => 'Extended Family / Relatives'],
-                (object)['id' => 3, 'option_value' => 'Sponsors & Godparents', 'display_text' => 'Sponsors & Godparents'],
-                (object)['id' => 4, 'option_value' => 'Friends & Community', 'display_text' => 'Friends & Community'],
+                (object)['id' => 1, 'value' => 'Immediate Family', 'label' => 'Immediate Family'],
+                (object)['id' => 2, 'value' => 'Extended Family / Relatives', 'label' => 'Extended Family / Relatives'],
+                (object)['id' => 3, 'value' => 'Sponsors & Godparents', 'label' => 'Sponsors & Godparents'],
+                (object)['id' => 4, 'value' => 'Friends & Community', 'label' => 'Friends & Community'],
             ]);
         }
 
@@ -98,6 +98,7 @@ class RegisteredUserController extends Controller
             ->value('label');
 
         $user = User::create([
+            'name' => $validated['guest_name'],
             'guest_name' => $validated['guest_name'],
             'first_name' => $validated['first_name'] ?? null,
             'last_name' => $validated['last_name'] ?? null,
@@ -126,14 +127,15 @@ class RegisteredUserController extends Controller
         DB::table('address_book')->insert([
             'user_id' => $user->id,
             'entry_name' => $fullName,
-            'first_name' => $validated['first_name'] ?? null,
-            'address' => $validated['address'] ?? null,
-            'city' => $validated['city'] ?? null,
-            'state' => $validated['state'] ?? null,
-            'zip' => $validated['zip'] ?? null,
-            'email' => $validated['phone_email'] ?? null,
-            'phone' => $validated['phone'] ?? null,
-            'mobile' => $validated['mobile'] ?? null,
+            'first_name' => $validated['first_name'] ?? '',
+            'address' => $validated['address'] ?? '',
+            'city' => $validated['city'] ?? '',
+            'state' => $validated['state'] ?? '',
+            'zip' => $validated['zip'] ?? '',
+            'email' => $validated['phone_email'] ?? '',
+            'phone' => $validated['phone'] ?? '',
+            'mobile' => $validated['mobile'] ?? '',
+            'notes' => '',
             'show_in_phonebook' => 1,
             'created_at' => now(),
         ]);
